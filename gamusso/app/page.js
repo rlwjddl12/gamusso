@@ -1,7 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
 import styles from './page.module.css'
-
 const CREW = [
   {name:'가습기',role:'소장님',uid:'hwt1014',c:'#4a90d9'},
   {name:'새잎',role:'반장',uid:'likey0u',c:'#5bc4a0'},
@@ -19,13 +18,10 @@ const CREW = [
   {name:'쨈도은',role:null,uid:'odoeun',c:'#ffd700'},
   {name:'정다니',role:null,uid:'wjdekgus112',c:'#cd853f'},
 ]
-
 function profileImg(uid){return `https://stimg.sooplive.com/LOGO/${uid.substring(0,2)}/${uid}/${uid}.jpg`}
 function stationUrl(uid){return `https://play.sooplive.com/${uid}`}
-
 export default function Home(){
-  const [liveMap, setLiveMap] = useState({})
-
+  const [liveData, setLiveData] = useState({})
   useEffect(() => {
     const check = async () => {
       const results = await Promise.all(
@@ -33,18 +29,20 @@ export default function Home(){
           try {
             const res = await fetch(`/api/live?uid=${m.uid}`)
             const data = await res.json()
-            return [m.uid, data.live]
+            return [m.uid, data]
           } catch {
-            return [m.uid, false]
+            return [m.uid, { live: false }]
           }
         })
       )
-      setLiveMap(Object.fromEntries(results))
+      setLiveData(Object.fromEntries(results))
     }
     check()
     const t = setInterval(check, 3 * 60 * 1000)
     return () => clearInterval(t)
   }, [])
+
+  const liveMembers = CREW.filter(m => liveData[m.uid]?.live)
 
   return (
     <main>
@@ -57,6 +55,33 @@ export default function Home(){
           </div>
         </div>
       </div>
+
+      {liveMembers.length > 0 && (
+        <div className={styles.container}>
+          <div className={styles.secLabel}>🔴 LIVE NOW · {liveMembers.length}명 방송중</div>
+          <div className={styles.liveGrid}>
+            {liveMembers.map(m => (
+              <a key={m.uid} href={stationUrl(m.uid)} target="_blank" rel="noopener" className={styles.liveCard}>
+                <div className={styles.liveThumbWrap}>
+                  {liveData[m.uid]?.thumb
+                    ? <img src={liveData[m.uid].thumb} alt={m.name} className={styles.liveThumb} />
+                    : <div className={styles.liveThumbFallback}>📡</div>
+                  }
+                  <div className={styles.liveBadge}>● LIVE</div>
+                </div>
+                <div className={styles.liveInfo}>
+                  <img src={profileImg(m.uid)} alt={m.name} className={styles.liveAvatar} />
+                  <div>
+                    <div className={styles.liveName}>{m.name}</div>
+                    <div className={styles.liveTitle}>{liveData[m.uid]?.title || ''}</div>
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className={styles.container}>
         <div className={styles.secLabel}>● MEMBERS</div>
         <div className={styles.cardGrid}>
@@ -67,11 +92,11 @@ export default function Home(){
               <div className={styles.cardImgWrap}>
                 <img src={profileImg(m.uid)} alt={m.name} className={styles.cardImg} onError={e=>{e.target.style.display='none';e.target.nextSibling.style.display='flex'}} />
                 <div className={styles.cardImgFallback}>{m.name[0]}</div>
-                {liveMap[m.uid] && <div className={styles.liveDot}>LIVE</div>}
+                {liveData[m.uid]?.live && <div className={styles.liveDot}>LIVE</div>}
               </div>
               <div className={styles.cardBottom}>
                 <div className={styles.cardNameRow}>
-                  <span className={liveMap[m.uid] ? styles.liveBullet : styles.offBullet} />
+                  <span className={liveData[m.uid]?.live ? styles.liveBullet : styles.offBullet} />
                   <div className={styles.cardName}>{m.name}</div>
                 </div>
                 <div className={styles.cardSub}>가무소</div>

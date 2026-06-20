@@ -1,5 +1,7 @@
 'use client'
+import { useState, useEffect } from 'react'
 import styles from './page.module.css'
+
 const CREW = [
   {name:'가습기',role:'소장님',uid:'hwt1014',c:'#4a90d9'},
   {name:'새잎',role:'반장',uid:'likey0u',c:'#5bc4a0'},
@@ -17,20 +19,44 @@ const CREW = [
   {name:'쨈도은',role:null,uid:'odoeun',c:'#ffd700'},
   {name:'정다니',role:null,uid:'wjdekgus112',c:'#cd853f'},
 ]
+
 function profileImg(uid){return `https://stimg.sooplive.com/LOGO/${uid.substring(0,2)}/${uid}/${uid}.jpg`}
 function stationUrl(uid){return `https://www.sooplive.com/station/${uid}`}
+
 export default function Home(){
+  const [liveMap, setLiveMap] = useState({})
+
+  useEffect(() => {
+    const check = async () => {
+      const results = await Promise.all(
+        CREW.map(async m => {
+          try {
+            const res = await fetch(`/api/live?uid=${m.uid}`)
+            const data = await res.json()
+            return [m.uid, data.live]
+          } catch {
+            return [m.uid, false]
+          }
+        })
+      )
+      setLiveMap(Object.fromEntries(results))
+    }
+    check()
+    const t = setInterval(check, 3 * 60 * 1000)
+    return () => clearInterval(t)
+  }, [])
+
   return (
     <main>
-    <div className={styles.hero}>
-  <img src="https://raw.githubusercontent.com/rlwjddl12/gamusso/main/gamusso/app/Banner.png" alt="가무소 크루" className={styles.heroBg} />
-  <div className={styles.heroOverlay}>
-    <div>
-      <h1>🎙️ 가무소</h1>
-      <p>가습기 사무소 · 숲 크루 · 멤버 15인</p>
-    </div>
-  </div>
-</div>
+      <div className={styles.hero}>
+        <img src="https://raw.githubusercontent.com/rlwjddl12/gamusso/main/gamusso/app/Banner.png" alt="가무소 크루" className={styles.heroBg} />
+        <div className={styles.heroOverlay}>
+          <div>
+            <h1>🎙️ 가무소</h1>
+            <p>가습기 사무소 · 숲 크루 · 멤버 15인</p>
+          </div>
+        </div>
+      </div>
       <div className={styles.container}>
         <div className={styles.secLabel}>● MEMBERS</div>
         <div className={styles.cardGrid}>
@@ -41,9 +67,13 @@ export default function Home(){
               <div className={styles.cardImgWrap}>
                 <img src={profileImg(m.uid)} alt={m.name} className={styles.cardImg} onError={e=>{e.target.style.display='none';e.target.nextSibling.style.display='flex'}} />
                 <div className={styles.cardImgFallback}>{m.name[0]}</div>
+                {liveMap[m.uid] && <div className={styles.liveDot}>LIVE</div>}
               </div>
               <div className={styles.cardBottom}>
-                <div className={styles.cardName}>{m.name}</div>
+                <div className={styles.cardNameRow}>
+                  <span className={liveMap[m.uid] ? styles.liveBullet : styles.offBullet} />
+                  <div className={styles.cardName}>{m.name}</div>
+                </div>
                 <div className={styles.cardSub}>가무소</div>
                 {m.role && <div className={styles.cardRole}>{m.role}</div>}
               </div>

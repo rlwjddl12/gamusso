@@ -22,7 +22,8 @@ function stationUrl(uid){return `https://www.sooplive.com/station/${uid}`}
 export default function Home(){
   return (
     <main>
-      <div className={styles.hero} style={{backgroundImage:"url('https://raw.githubusercontent.com/rlwjddl12/gamusso/main/gamusso/app/Banner.png')", backgroundSize:'cover', backgroundPosition:'center'}}>
+    <div className={styles.hero}>
+  <img src="https://raw.githubusercontent.com/rlwjddl12/gamusso/main/gamusso/app/Banner.png" alt="가무소 크루" className={styles.heroBg} />
   <div className={styles.heroOverlay}>
     <div>
       <h1>🎙️ 가무소</h1>

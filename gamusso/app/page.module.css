@@ -104,4 +104,75 @@
   border-radius: 0 0 8px 8px;
   padding: 8px 8px 10px;
   text-align: center;
-  border: 1.5px solid color-mix(in srgb, var(--card-color)
+  border: 1.5px solid color-mix(in srgb, var(--card-color) 40%, transparent);
+  border-top: 2px solid color-mix(in srgb, var(--card-color) 60%, transparent);
+}
+.cardNameRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+.cardName {
+  font-size: 17px;
+  font-weight: 700;
+  color: #1a1a1a;
+  letter-spacing: -0.01em;
+}
+.cardSub {
+  display: none;
+}
+.cardRole {
+  display: inline-block;
+  font-size: 9px;
+  padding: 1px 6px;
+  border-radius: 99px;
+  background: color-mix(in srgb, var(--card-color) 20%, transparent);
+  color: color-mix(in srgb, var(--card-color) 80%, #000);
+  margin-top: 4px;
+  font-weight: 600;
+}
+.liveDot {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: #ff4444;
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  letter-spacing: .04em;
+}
+.liveBullet {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #ff4444;
+  flex-shrink: 0;
+  animation: blink 1.4s ease-in-out infinite;
+}
+.offBullet {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #aaa;
+  flex-shrink: 0;
+}
+@keyframes blink {
+  0%,100% { opacity:1; transform:scale(1); }
+  50% { opacity:.3; transform:scale(.7); }
+}
+.footer {
+  text-align: center;
+  font-size: 12px;
+  color: #333344;
+  padding: 1.5rem 1.25rem;
+  border-top: .5px solid rgba(255,255,255,0.05);
+}
+@media (max-width: 520px) {
+  .cardGrid {
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 14px;
+  }
+}

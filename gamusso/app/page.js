@@ -20,6 +20,29 @@ const CREW = [
 ]
 function profileImg(uid){return `https://stimg.sooplive.com/LOGO/${uid.substring(0,2)}/${uid}/${uid}.jpg`}
 function stationUrl(uid){return `https://play.sooplive.com/${uid}`}
+
+function MemberCard({ m, isLive }) {
+  return (
+    <a href={stationUrl(m.uid)} target="_blank" rel="noopener" className={styles.idCard} style={{'--card-color':m.c}}>
+      <div className={styles.cardHole} />
+      <div className={styles.cardLanyard} />
+      <div className={styles.cardImgWrap}>
+        <img src={profileImg(m.uid)} alt={m.name} className={styles.cardImg} onError={e=>{e.target.style.display='none';e.target.nextSibling.style.display='flex'}} />
+        <div className={styles.cardImgFallback}>{m.name[0]}</div>
+        {isLive && <div className={styles.liveDot}>LIVE</div>}
+      </div>
+      <div className={styles.cardBottom}>
+        <div className={styles.cardNameRow}>
+          <span className={isLive ? styles.liveBullet : styles.offBullet} />
+          <div className={styles.cardName}>{m.name}</div>
+        </div>
+        <div className={styles.cardSub}>가무소</div>
+        {m.role && <div className={styles.cardRole}>{m.role}</div>}
+      </div>
+    </a>
+  )
+}
+
 export default function Home(){
   const [liveData, setLiveData] = useState({})
   useEffect(() => {
@@ -43,6 +66,7 @@ export default function Home(){
   }, [])
 
   const liveMembers = CREW.filter(m => liveData[m.uid]?.live)
+  const offMembers = CREW.filter(m => !liveData[m.uid]?.live)
 
   return (
     <main>
@@ -70,7 +94,6 @@ export default function Home(){
                   <div className={styles.liveBadge}>● LIVE</div>
                 </div>
                 <div className={styles.liveInfo}>
-                  <img src={profileImg(m.uid)} alt={m.name} className={styles.liveAvatar} />
                   <div>
                     <div className={styles.liveName}>{m.name}</div>
                     <div className={styles.liveTitle}>{liveData[m.uid]?.title || ''}</div>
@@ -79,33 +102,21 @@ export default function Home(){
               </a>
             ))}
           </div>
+
+          <div className={styles.secLabel} style={{marginTop:'2rem'}}>● 방송중인 멤버</div>
+          <div className={styles.cardGrid}>
+            {liveMembers.map(m => <MemberCard key={m.uid} m={m} isLive={true} />)}
+          </div>
         </div>
       )}
 
       <div className={styles.container}>
-        <div className={styles.secLabel}>● MEMBERS</div>
+        <div className={styles.secLabel}>● 오프라인 멤버</div>
         <div className={styles.cardGrid}>
-          {CREW.map(m => (
-            <a key={m.uid} href={stationUrl(m.uid)} target="_blank" rel="noopener" className={styles.idCard} style={{'--card-color':m.c}}>
-              <div className={styles.cardHole} />
-              <div className={styles.cardLanyard} />
-              <div className={styles.cardImgWrap}>
-                <img src={profileImg(m.uid)} alt={m.name} className={styles.cardImg} onError={e=>{e.target.style.display='none';e.target.nextSibling.style.display='flex'}} />
-                <div className={styles.cardImgFallback}>{m.name[0]}</div>
-                {liveData[m.uid]?.live && <div className={styles.liveDot}>LIVE</div>}
-              </div>
-              <div className={styles.cardBottom}>
-                <div className={styles.cardNameRow}>
-                  <span className={liveData[m.uid]?.live ? styles.liveBullet : styles.offBullet} />
-                  <div className={styles.cardName}>{m.name}</div>
-                </div>
-                <div className={styles.cardSub}>가무소</div>
-                {m.role && <div className={styles.cardRole}>{m.role}</div>}
-              </div>
-            </a>
-          ))}
+          {offMembers.map(m => <MemberCard key={m.uid} m={m} isLive={false} />)}
         </div>
       </div>
+
       <footer className={styles.footer}>가무소 팬페이지 · 팬메이드 비공식 페이지</footer>
     </main>
   )

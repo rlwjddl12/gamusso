@@ -11,7 +11,7 @@ const CREW = [
   { name: '야뿌',   role: null,     uid: 'ekrekrnfl9',  c: 4 },
   { name: '하티하티',role: null,    uid: 'gkxl1004',    c: 5 },
   { name: '딩굴',   role: null,     uid: 'dinggoolx3',  c: 6 },
-  { name: '투냥츠', role: '마겟',   uid: 'toocats',     c: 7 },
+  { name: '투냥츠', role: null,     uid: 'toocats',     c: 7 },
   { name: '단수아', role: null,     uid: 'tndk321',     c: 0 },
   { name: '류채아', role: null,     uid: 'gio12025',    c: 1 },
   { name: '희꾸미', role: null,     uid: 'ddr9463',     c: 4 },

@@ -102,11 +102,6 @@ export default function Home(){
               </a>
             ))}
           </div>
-
-          <div className={styles.secLabel} style={{marginTop:'2rem'}}>● 방송중인 멤버</div>
-          <div className={styles.cardGrid}>
-            {liveMembers.map(m => <MemberCard key={m.uid} m={m} isLive={true} />)}
-          </div>
         </div>
       )}
 

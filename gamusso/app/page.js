@@ -1,37 +1,33 @@
-js'use client'
+'use client'
 
 import styles from './page.module.css'
 
 const CREW = [
-  { name: '가습기', role: '소장님', uid: 'hwt1014',     c: 0 },
-  { name: '새잎',   role: '반장',   uid: 'likey0u',     c: 1 },
-  { name: '잼율이', role: null,     uid: 'jamyul2',     c: 2 },
-  { name: '기찬하', role: null,     uid: 'khj011219',   c: 3 },
-  { name: '야뿌',   role: null,     uid: 'ekrekrnfl9',  c: 4 },
-  { name: '하티하티',role: null,    uid: 'gkxl1004',    c: 5 },
-  { name: '딩굴',   role: null,     uid: 'dinggoolx3',  c: 6 },
-  { name: '투냥츠', role: null,     uid: 'toocats',     c: 7 },
-  { name: '단수아', role: null,     uid: 'tndk321',     c: 0 },
-  { name: '류채아', role: null,     uid: 'gio12025',    c: 1 },
-  { name: '희꾸미', role: null,     uid: 'ddr9463',     c: 4 },
-  { name: '연보라', role: null,     uid: '200501',      c: 3 },
-  { name: '연치민', role: null,     uid: 'yeonchimin',  c: 5 },
-  { name: '쨈도은', role: null,     uid: 'odoeun',      c: 6 },
-  { name: '정다니', role: null,     uid: 'wjdekgus112', c: 2 },
+  { name: '가습기', role: '소장님', uid: 'hwt1014',     c: '#4a90d9' },
+  { name: '새잎',   role: '반장',   uid: 'likey0u',     c: '#5bc4a0' },
+  { name: '잼율이', role: null,     uid: 'jamyul2',     c: '#e89fc0' },
+  { name: '기찬하', role: null,     uid: 'khj011219',   c: '#a78bfa' },
+  { name: '야뿌',   role: null,     uid: 'ekrekrnfl9',  c: '#7ec8e3' },
+  { name: '하티하티',role: null,    uid: 'gkxl1004',    c: '#f4a460' },
+  { name: '딩굴',   role: null,     uid: 'dinggoolx3',  c: '#90ee90' },
+  { name: '투냥츠', role: null,     uid: 'toocats',     c: '#ffb6c1' },
+  { name: '단수아', role: null,     uid: 'tndk321',     c: '#dda0dd' },
+  { name: '류채아', role: null,     uid: 'gio12025',    c: '#f08080' },
+  { name: '희꾸미', role: null,     uid: 'ddr9463',     c: '#20b2aa' },
+  { name: '연보라', role: null,     uid: '200501',      c: '#9370db' },
+  { name: '연치민', role: null,     uid: 'yeonchimin',  c: '#6495ed' },
+  { name: '쨈도은', role: null,     uid: 'odoeun',      c: '#ffd700' },
+  { name: '정다니', role: null,     uid: 'wjdekgus112', c: '#cd853f' },
 ]
 
-const AV_COLORS = [
-  { bg: 'rgba(59,130,246,.25)',  color: '#93c5fd' },
-  { bg: 'rgba(16,185,129,.25)',  color: '#6ee7b7' },
-  { bg: 'rgba(244,114,182,.25)', color: '#f9a8d4' },
-  { bg: 'rgba(167,139,250,.25)', color: '#c4b5fd' },
-  { bg: 'rgba(251,146,60,.25)',  color: '#fdba74' },
-  { bg: 'rgba(251,191,36,.25)',  color: '#fde68a' },
-  { bg: 'rgba(52,211,153,.25)',  color: '#6ee7b7' },
-  { bg: 'rgba(248,113,113,.25)', color: '#fca5a5' },
-]
+function profileImg(uid) {
+  const prefix = uid.substring(0, 2)
+  return `https://stimg.sooplive.com/LOGO/${prefix}/${uid}/${uid}.jpg`
+}
 
-function stationUrl(uid) { return `https://www.sooplive.com/station/${uid}` }
+function stationUrl(uid) {
+  return `https://www.sooplive.com/station/${uid}`
+}
 
 export default function Home() {
   return (
@@ -47,34 +43,40 @@ export default function Home() {
       </div>
 
       <div className={styles.container}>
-        <div className={styles.liveHeader}>
-          <div className={styles.liveHeaderLeft}>
-            <div className={styles.liveEyebrow}>
-              <span className={styles.eyebrowDot} />
-              MEMBERS
-            </div>
-            <h2 className={styles.liveCount}>
-              가무소 <span className={styles.liveNum}>15인</span>
-            </h2>
-            <div className={styles.liveSubtitle}>
-              클릭하면 숲 채널로 바로 이동해요
-            </div>
-          </div>
-        </div>
-
-        <div className={styles.offlineRow}>
-          {CREW.map(m => {
-            const av = AV_COLORS[m.c]
-            return (
-              <a key={m.uid} href={stationUrl(m.uid)} target="_blank" rel="noopener" className={styles.offChip}>
-                <div className={styles.offAvatar} style={{ background: av.bg, color: av.color }}>
+        <div className={styles.secLabel}>● MEMBERS</div>
+        <div className={styles.cardGrid}>
+          {CREW.map(m => (
+            
+              key={m.uid}
+              href={stationUrl(m.uid)}
+              target="_blank"
+              rel="noopener"
+              className={styles.idCard}
+              style={{ '--card-color': m.c }}
+            >
+              <div className={styles.cardHole} />
+              <div className={styles.cardLanyard} />
+              <div className={styles.cardImgWrap}>
+                <img
+                  src={profileImg(m.uid)}
+                  alt={m.name}
+                  className={styles.cardImg}
+                  onError={e => {
+                    e.target.style.display = 'none'
+                    e.target.nextSibling.style.display = 'flex'
+                  }}
+                />
+                <div className={styles.cardImgFallback}>
                   {m.name[0]}
                 </div>
-                <span className={styles.offName}>{m.name}</span>
-                {m.role && <span className={styles.roleTag}>{m.role}</span>}
-              </a>
-            )
-          })}
+              </div>
+              <div className={styles.cardBottom}>
+                <div className={styles.cardName}>{m.name}</div>
+                <div className={styles.cardSub}>가무소</div>
+                {m.role && <div className={styles.cardRole}>{m.role}</div>}
+              </div>
+            </a>
+          ))}
         </div>
       </div>
 

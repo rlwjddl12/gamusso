@@ -73,10 +73,7 @@ export default function Home(){
       <div className={styles.hero}>
         <img src="https://raw.githubusercontent.com/rlwjddl12/gamusso/main/gamusso/app/Banner.png" alt="가무소 크루" className={styles.heroBg} />
         <div className={styles.heroOverlay}>
-  <div className={styles.heroTitle}>
-    가무소
-  </div>
-</div>
+          <div className={styles.heroTitle}>가무소</div>
         </div>
       </div>
 

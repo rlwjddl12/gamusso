@@ -5,17 +5,8 @@ export async function GET(request) {
 
   try {
     const res = await fetch(
-      `https://live.sooplive.co.kr/afreeca/player_live_api.php?bjid=${uid}`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Referer': 'https://play.sooplive.com/',
-          'Origin': 'https://play.sooplive.com',
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
-        },
-        body: `bjid=${uid}&type=live&confirm_adult=0&player_type=html5&mode=landing`,
-      }
+      `https://black-art-16c8.7412369a.workers.dev/?bjid=${uid}`,
+      { signal: AbortSignal.timeout(8000) }
     );
 
     const text = await res.text();

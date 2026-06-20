@@ -21,7 +21,7 @@ const CREW = [
 ]
 
 function profileImg(uid){return `https://stimg.sooplive.com/LOGO/${uid.substring(0,2)}/${uid}/${uid}.jpg`}
-function stationUrl(uid){return `https://www.sooplive.com/station/${uid}`}
+function stationUrl(uid){return `https://play.sooplive.com/${uid}`}
 
 export default function Home(){
   const [liveMap, setLiveMap] = useState({})

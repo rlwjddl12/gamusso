@@ -4,7 +4,7 @@ export async function GET(request) {
   if (!uid) return Response.json({ live: false });
   try {
     const res = await fetch(
-      `https://gamusso-proxy-672047278242.asia-northeast3.run.app/?bjid=${uid}`,
+      `https://black-art-16c8.7412369a.workers.dev/?bjid=${uid}`,
       { signal: AbortSignal.timeout(8000) }
     );
     const data = await res.json();

@@ -1,6 +1,5 @@
-'use client'
+js'use client'
 
-import { useState, useEffect, useCallback } from 'react'
 import styles from './page.module.css'
 
 const CREW = [
@@ -33,41 +32,8 @@ const AV_COLORS = [
 ]
 
 function stationUrl(uid) { return `https://www.sooplive.com/station/${uid}` }
-function liveUrl(uid, broadNo) { return broadNo ? `https://play.sooplive.com/${uid}/${broadNo}` : stationUrl(uid) }
 
 export default function Home() {
-  const [liveInfo, setLiveInfo] = useState({})
-  const [lastCheck, setLastCheck] = useState('')
-  const [loading, setLoading] = useState(false)
-
-  const checkAll = useCallback(async () => {
-    setLoading(true)
-    const results = await Promise.all(
-      CREW.map(async m => {
-        try {
-          const res = await fetch(`/api/live?uid=${m.uid}`)
-          const data = await res.json()
-          return [m.uid, data]
-        } catch {
-          return [m.uid, { live: false }]
-        }
-      })
-    )
-    setLiveInfo(Object.fromEntries(results))
-    const now = new Date()
-    setLastCheck(`${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`)
-    setLoading(false)
-  }, [])
-
-  useEffect(() => {
-    checkAll()
-    const timer = setInterval(checkAll, 3 * 60 * 1000)
-    return () => clearInterval(timer)
-  }, [checkAll])
-
-  const liveMembers = CREW.filter(m => liveInfo[m.uid]?.live)
-  const offMembers  = CREW.filter(m => !liveInfo[m.uid]?.live)
-
   return (
     <main>
       <div className={styles.hero}>
@@ -75,7 +41,7 @@ export default function Home() {
         <div className={styles.heroOverlay}>
           <div>
             <h1>🎙️ 가무소</h1>
-            <p>가습기 사무소 · 아프리카TV 크루 · 멤버 15인</p>
+            <p>가습기 사무소 · 숲 크루 · 멤버 15인</p>
           </div>
         </div>
       </div>
@@ -85,65 +51,19 @@ export default function Home() {
           <div className={styles.liveHeaderLeft}>
             <div className={styles.liveEyebrow}>
               <span className={styles.eyebrowDot} />
-              LIVE NOW
+              MEMBERS
             </div>
             <h2 className={styles.liveCount}>
-              지금 <span className={styles.liveNum}>{liveMembers.length}명</span> 방송중
+              가무소 <span className={styles.liveNum}>15인</span>
             </h2>
             <div className={styles.liveSubtitle}>
-              {offMembers.length}명 오프라인 · {lastCheck ? `${lastCheck} 업데이트` : '확인 중...'}
+              클릭하면 숲 채널로 바로 이동해요
             </div>
           </div>
-          <button
-            className={`${styles.refreshBtn} ${loading ? styles.spinning : ''}`}
-            onClick={checkAll}
-            disabled={loading}
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-              <path d="M1 4v6h6M23 20v-6h-6"/>
-              <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4-4.64 4.36A9 9 0 0 1 3.51 15"/>
-            </svg>
-          </button>
         </div>
 
-        {liveMembers.length > 0 && (
-          <div className={styles.liveGrid}>
-            {liveMembers.map(m => {
-              const info = liveInfo[m.uid] || {}
-              const av = AV_COLORS[m.c]
-              return (
-                <a key={m.uid} href={liveUrl(m.uid, info.broadNo)} target="_blank" rel="noopener" className={styles.liveCard}>
-                  <div className={styles.thumbWrap}>
-                    {info.thumb
-                      ? <img src={info.thumb} alt={m.name} onError={e => e.target.style.display='none'} />
-                      : <div className={styles.thumbPlaceholder} style={{ background: av.bg, color: av.color }}>{m.name[0]}</div>
-                    }
-                    <div className={styles.onAir}>● ON AIR</div>
-                    {info.viewers > 0 && (
-                      <div className={styles.viewerTag}>{info.viewers.toLocaleString()}</div>
-                    )}
-                  </div>
-                  <div className={styles.liveCardInfo}>
-                    <div className={styles.liveCardAvatar} style={{ background: av.bg, color: av.color }}>
-                      {m.name[0]}
-                    </div>
-                    <div>
-                      <div className={styles.liveCardName}>{m.name}</div>
-                      {info.title && <div className={styles.liveCardTitle}>{info.title}</div>}
-                    </div>
-                  </div>
-                </a>
-              )
-            })}
-          </div>
-        )}
-
-        {liveMembers.length === 0 && (
-          <div className={styles.noLive}>현재 방송 중인 멤버가 없습니다</div>
-        )}
-
         <div className={styles.offlineRow}>
-          {offMembers.map(m => {
+          {CREW.map(m => {
             const av = AV_COLORS[m.c]
             return (
               <a key={m.uid} href={stationUrl(m.uid)} target="_blank" rel="noopener" className={styles.offChip}>
@@ -151,6 +71,7 @@ export default function Home() {
                   {m.name[0]}
                 </div>
                 <span className={styles.offName}>{m.name}</span>
+                {m.role && <span className={styles.roleTag}>{m.role}</span>}
               </a>
             )
           })}

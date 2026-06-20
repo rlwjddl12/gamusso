@@ -175,8 +175,17 @@
 }
 @media (max-width: 520px) {
   .cardGrid {
-    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
-    gap: 14px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+  .liveGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  .cardName {
+    font-size: 13px;
+  }
+}
   }
 }
 .liveGrid {

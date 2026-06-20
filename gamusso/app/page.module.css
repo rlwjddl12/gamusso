@@ -13,21 +13,16 @@
 .heroOverlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgba(15,15,19,1) 0%, rgba(15,15,19,0.2) 55%, transparent 100%);
   display: flex;
-  align-items: flex-end;
-  padding: 2rem;
+  align-items: center;
+  justify-content: center;
 }
-.heroOverlay h1 {
-  font-size: clamp(22px, 5vw, 34px);
-  font-weight: 700;
-  color: #fff;
+.heroTitle {
+  font-size: clamp(36px, 8vw, 72px);
+  font-weight: 900;
+  color: #2a1f0e;
   letter-spacing: -0.02em;
-}
-.heroOverlay p {
-  font-size: 13px;
-  color: rgba(255,255,255,0.5);
-  margin-top: 4px;
+  text-shadow: 2px 2px 0px rgba(255,255,255,0.4);
 }
 .container {
   max-width: 1100px;

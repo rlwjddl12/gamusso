@@ -22,15 +22,14 @@ function stationUrl(uid){return `https://www.sooplive.com/station/${uid}`}
 export default function Home(){
   return (
     <main>
-      <div className={styles.hero}>
-        <img src="/Banner.png" alt="가무소 크루" />
-        <div className={styles.heroOverlay}>
-          <div>
-            <h1>🎙️ 가무소</h1>
-            <p>가습기 사무소 · 숲 크루 · 멤버 15인</p>
-          </div>
-        </div>
-      </div>
+      <div className={styles.hero} style={{backgroundImage:"url('https://raw.githubusercontent.com/rlwjddl12/gamusso/main/gamusso/app/Banner.png')", backgroundSize:'cover', backgroundPosition:'center'}}>
+  <div className={styles.heroOverlay}>
+    <div>
+      <h1>🎙️ 가무소</h1>
+      <p>가습기 사무소 · 숲 크루 · 멤버 15인</p>
+    </div>
+  </div>
+</div>
       <div className={styles.container}>
         <div className={styles.secLabel}>● MEMBERS</div>
         <div className={styles.cardGrid}>

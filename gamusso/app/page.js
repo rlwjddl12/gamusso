@@ -22,14 +22,14 @@ const CREW = [
 ]
 
 const AV_COLORS = [
-  { bg: 'rgba(59,130,246,.18)',  color: '#93c5fd' },
-  { bg: 'rgba(16,185,129,.18)',  color: '#6ee7b7' },
-  { bg: 'rgba(244,114,182,.18)', color: '#f9a8d4' },
-  { bg: 'rgba(167,139,250,.18)', color: '#c4b5fd' },
-  { bg: 'rgba(251,146,60,.18)',  color: '#fdba74' },
-  { bg: 'rgba(251,191,36,.18)',  color: '#fde68a' },
-  { bg: 'rgba(52,211,153,.18)',  color: '#6ee7b7' },
-  { bg: 'rgba(248,113,113,.18)', color: '#fca5a5' },
+  { bg: 'rgba(59,130,246,.25)',  color: '#93c5fd' },
+  { bg: 'rgba(16,185,129,.25)',  color: '#6ee7b7' },
+  { bg: 'rgba(244,114,182,.25)', color: '#f9a8d4' },
+  { bg: 'rgba(167,139,250,.25)', color: '#c4b5fd' },
+  { bg: 'rgba(251,146,60,.25)',  color: '#fdba74' },
+  { bg: 'rgba(251,191,36,.25)',  color: '#fde68a' },
+  { bg: 'rgba(52,211,153,.25)',  color: '#6ee7b7' },
+  { bg: 'rgba(248,113,113,.25)', color: '#fca5a5' },
 ]
 
 function stationUrl(uid) { return `https://www.sooplive.com/station/${uid}` }
@@ -53,8 +53,7 @@ export default function Home() {
         }
       })
     )
-    const info = Object.fromEntries(results)
-    setLiveInfo(info)
+    setLiveInfo(Object.fromEntries(results))
     const now = new Date()
     setLastCheck(`${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`)
     setLoading(false)
@@ -71,7 +70,6 @@ export default function Home() {
 
   return (
     <main>
-      {/* HERO */}
       <div className={styles.hero}>
         <img src="/banner.png" alt="가무소 크루" />
         <div className={styles.heroOverlay}>
@@ -83,15 +81,17 @@ export default function Home() {
       </div>
 
       <div className={styles.container}>
-        {/* TOPBAR */}
-        <div className={styles.topbar}>
-          <div>
-            <div className={styles.livePill}>
-              <span className={styles.dot} />
-              <span>{liveMembers.length}명 라이브 중</span>
+        <div className={styles.liveHeader}>
+          <div className={styles.liveHeaderLeft}>
+            <div className={styles.liveEyebrow}>
+              <span className={styles.eyebrowDot} />
+              LIVE NOW
             </div>
-            <div className={styles.lastCheck}>
-              {lastCheck ? `마지막 확인: ${lastCheck}` : '확인 중...'}
+            <h2 className={styles.liveCount}>
+              지금 <span className={styles.liveNum}>{liveMembers.length}명</span> 방송중
+            </h2>
+            <div className={styles.liveSubtitle}>
+              {offMembers.length}명 오프라인 · {lastCheck ? `${lastCheck} 업데이트` : '확인 중...'}
             </div>
           </div>
           <button
@@ -103,86 +103,57 @@ export default function Home() {
               <path d="M1 4v6h6M23 20v-6h-6"/>
               <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4-4.64 4.36A9 9 0 0 1 3.51 15"/>
             </svg>
-            새로고침
           </button>
         </div>
 
-        {/* LIVE SECTION */}
         {liveMembers.length > 0 && (
-          <div className={styles.section}>
-            <div className={styles.secLabel}>🔴 라이브 중</div>
-            <div className={styles.liveGrid}>
-              {liveMembers.map(m => {
-                const info = liveInfo[m.uid] || {}
-                const av = AV_COLORS[m.c]
-                return (
-                  <a
-                    key={m.uid}
-                    href={liveUrl(m.uid, info.broadNo)}
-                    target="_blank"
-                    rel="noopener"
-                    className={styles.liveCard}
-                  >
-                    <div className={styles.thumbWrap}>
-                      {info.thumb
-                        ? <img src={info.thumb} alt={m.name} onError={e => e.target.style.display='none'} />
-                        : <div className={styles.thumbPlaceholder}>📺</div>
-                      }
-                      <div className={styles.liveTag}>LIVE</div>
-                      {info.viewers > 0 && (
-                        <div className={styles.viewerTag}>
-                          <span className={styles.viewerDot} />
-                          {info.viewers.toLocaleString()}
-                        </div>
-                      )}
-                    </div>
-                    <div className={styles.liveInfo}>
-                      <div className={styles.liveStreamer}>
-                        <div className={styles.miniAvatar} style={{ background: av.bg, color: av.color, boxShadow: '0 0 0 2px #ff4444' }}>
-                          {m.name[0]}
-                        </div>
-                        <div>
-                          <span className={styles.streamerName}>{m.name}</span>
-                          {m.role && <span className={styles.roleBadge}>{m.role}</span>}
-                        </div>
-                      </div>
-                      {info.title && <div className={styles.liveTitle}>{info.title}</div>}
-                    </div>
-                  </a>
-                )
-              })}
-            </div>
-          </div>
-        )}
-
-        {/* OFFLINE SECTION */}
-        <div className={styles.section}>
-          <div className={styles.secLabel}>{liveMembers.length > 0 ? '오프라인' : '전체 멤버'}</div>
-          <div className={styles.offGrid}>
-            {offMembers.map(m => {
+          <div className={styles.liveGrid}>
+            {liveMembers.map(m => {
+              const info = liveInfo[m.uid] || {}
               const av = AV_COLORS[m.c]
               return (
-                <a
-                  key={m.uid}
-                  href={stationUrl(m.uid)}
-                  target="_blank"
-                  rel="noopener"
-                  className={styles.offCard}
-                >
-                  <div className={styles.avatar} style={{ background: av.bg, color: av.color }}>
-                    {m.name[0]}
+                <a key={m.uid} href={liveUrl(m.uid, info.broadNo)} target="_blank" rel="noopener" className={styles.liveCard}>
+                  <div className={styles.thumbWrap}>
+                    {info.thumb
+                      ? <img src={info.thumb} alt={m.name} onError={e => e.target.style.display='none'} />
+                      : <div className={styles.thumbPlaceholder} style={{ background: av.bg, color: av.color }}>{m.name[0]}</div>
+                    }
+                    <div className={styles.onAir}>● ON AIR</div>
+                    {info.viewers > 0 && (
+                      <div className={styles.viewerTag}>{info.viewers.toLocaleString()}</div>
+                    )}
                   </div>
-                  <div className={styles.cardName}>{m.name}</div>
-                  {m.role
-                    ? <div className={styles.cardRole}>{m.role}</div>
-                    : <div style={{ height: 18 }} />
-                  }
-                  <div className={styles.cardStatus}>○ 오프라인</div>
-                  <div className={styles.cardGo}>↗ 채널 바로가기</div>
+                  <div className={styles.liveCardInfo}>
+                    <div className={styles.liveCardAvatar} style={{ background: av.bg, color: av.color }}>
+                      {m.name[0]}
+                    </div>
+                    <div>
+                      <div className={styles.liveCardName}>{m.name}</div>
+                      {info.title && <div className={styles.liveCardTitle}>{info.title}</div>}
+                    </div>
+                  </div>
                 </a>
               )
             })}
           </div>
+        )}
+
+        {liveMembers.length === 0 && (
+          <div className={styles.noLive}>현재 방송 중인 멤버가 없습니다</div>
+        )}
+
+        <div className={styles.offlineRow}>
+          {offMembers.map(m => {
+            const av = AV_COLORS[m.c]
+            return (
+              <a key={m.uid} href={stationUrl(m.uid)} target="_blank" rel="noopener" className={styles.offChip}>
+                <div className={styles.offAvatar} style={{ background: av.bg, color: av.color }}>
+                  {m.name[0]}
+                </div>
+                <span className={styles.offName}>{m.name}</span>
+              </a>
+            )
+          })}
         </div>
       </div>
 

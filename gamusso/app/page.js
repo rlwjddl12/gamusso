@@ -23,7 +23,7 @@ export default function Home(){
   return (
     <main>
       <div className={styles.hero}>
-        <img src="/banner.png" alt="가무소 크루" />
+        <img src="/Banner.png" alt="가무소 크루" />
         <div className={styles.heroOverlay}>
           <div>
             <h1>🎙️ 가무소</h1>

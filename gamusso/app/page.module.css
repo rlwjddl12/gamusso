@@ -1,3 +1,184 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+.hero {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  max-height: 340px;
+}
+.heroBg {
+  width: 100%;
+  object-fit: cover;
+  display: block;
+  max-height: 340px;
+}
+.heroOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(15,15,19,1) 0%, rgba(15,15,19,0.2) 55%, transparent 100%);
+  display: flex;
+  align-items: flex-end;
+  padding: 2rem;
+}
+.heroOverlay h1 {
+  font-size: clamp(22px, 5vw, 34px);
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.02em;
+}
+.heroOverlay p {
+  font-size: 13px;
+  color: rgba(255,255,255,0.5);
+  margin-top: 4px;
+}
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 3rem;
+}
+.secLabel {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  color: #ff4444;
+  margin-bottom: 1.5rem;
+}
+.cardGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 20px;
+}
+.idCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+  color: inherit;
+  transition: transform .2s;
+  position: relative;
+  width: 100%;
+}
+.idCard:hover {
+  transform: translateY(-6px) rotate(-1deg);
+}
+.cardHole {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #2a2a35;
+  border: 2px solid #444;
+  margin-bottom: 4px;
+}
+.cardLanyard {
+  width: 3px;
+  height: 12px;
+  background: linear-gradient(to bottom, #888, #555);
+}
+.cardImgWrap {
+  width: 100%;
+  aspect-ratio: 3/4;
+  background: color-mix(in srgb, var(--card-color) 20%, #1a1a24);
+  border-radius: 8px 8px 0 0;
+  overflow: hidden;
+  position: relative;
+  border: 1.5px solid color-mix(in srgb, var(--card-color) 40%, transparent);
+  border-bottom: none;
+}
+.cardImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+  display: block;
+}
+.cardImgFallback {
+  display: none;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--card-color);
+}
+.cardBottom {
+  width: 100%;
+  background: #f5f0e8;
+  border-radius: 0 0 8px 8px;
+  padding: 8px 8px 10px;
+  text-align: center;
+  border: 1.5px solid color-mix(in srgb, var(--card-color) 40%, transparent);
+  border-top: 2px solid color-mix(in srgb, var(--card-color) 60%, transparent);
+}
+.cardNameRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+.cardName {
+  font-size: 17px;
+  font-weight: 700;
+  color: #1a1a1a;
+  letter-spacing: -0.01em;
+}
+.cardSub {
+  display: none;
+}
+.cardRole {
+  display: inline-block;
+  font-size: 9px;
+  padding: 1px 6px;
+  border-radius: 99px;
+  background: color-mix(in srgb, var(--card-color) 20%, transparent);
+  color: color-mix(in srgb, var(--card-color) 80%, #000);
+  margin-top: 4px;
+  font-weight: 600;
+}
+.liveDot {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: #ff4444;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 4px;
+  letter-spacing: .08em;
+}
+.liveBullet {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #ff4444;
+  flex-shrink: 0;
+  animation: blink 1.4s ease-in-out infinite;
+}
+.offBullet {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #aaa;
+  flex-shrink: 0;
+}
+@keyframes blink {
+  0%,100% { opacity:1; transform:scale(1); }
+  50% { opacity:.3; transform:scale(.7); }
+}
+.footer {
+  text-align: center;
+  font-size: 12px;
+  color: #333344;
+  padding: 1.5rem 1.25rem;
+  border-top: .5px solid rgba(255,255,255,0.05);
+}
+@media (max-width: 520px) {
+  .cardGrid {
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 14px;
+  }
+}
 .liveGrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));

@@ -483,9 +483,9 @@ const ALEVS=[
   {name:'신성갑+10',def:135,cost:520,rate:15},{name:'신성갑+11★',def:165,cost:0,rate:0},
 ];
 const DIFFICULTY={
-  easy:{label:'🟢 쉬움',foodPerTurn:60,gatherMin:80,gatherMax:160,aggrMul:0.4,wallMul:2.0,rogueMul:0.3,sleepRate:0.2,defeatMul:1.0,foodWarn:80,actions:8,lootMin:120,lootMax:250,recruitCost:80,desc:'식량 소모↓ 수집↑ 적 공격성↓ 돌발↓'},
-  normal:{label:'🟡 보통',foodPerTurn:100,gatherMin:40,gatherMax:90,aggrMul:0.7,wallMul:3.5,rogueMul:0.55,sleepRate:0.38,defeatMul:1.4,foodWarn:120,actions:8,lootMin:80,lootMax:180,recruitCost:100,desc:'표준 밸런스'},
-  hard:{label:'🔴 어려움',foodPerTurn:150,gatherMin:25,gatherMax:65,aggrMul:0.9,wallMul:4.5,rogueMul:0.7,sleepRate:0.5,defeatMul:1.8,foodWarn:180,actions:7,lootMin:50,lootMax:120,recruitCost:130,desc:'식량 소모↑↑ 적 매우 공격적 돌발↑↑'},
+  easy:{label:'🟢 쉬움',foodPerTurn:80,gatherMin:50,gatherMax:110,aggrMul:0.5,wallMul:2.5,rogueMul:0.3,sleepRate:0.2,defeatMul:1.2,foodWarn:100,actions:8,lootMin:100,lootMax:200,recruitCost:100,desc:'식량 소모↓ 수집↑ 적 공격성↓ 돌발↓'},
+  normal:{label:'🟡 보통',foodPerTurn:150,gatherMin:25,gatherMax:55,aggrMul:0.85,wallMul:4.0,rogueMul:0.65,sleepRate:0.45,defeatMul:1.6,foodWarn:180,actions:8,lootMin:60,lootMax:130,recruitCost:130,desc:'표준 밸런스'},
+  hard:{label:'🔴 어려움',foodPerTurn:220,gatherMin:15,gatherMax:40,aggrMul:1.0,wallMul:5.5,rogueMul:0.8,sleepRate:0.55,defeatMul:2.0,foodWarn:250,actions:7,lootMin:40,lootMax:90,recruitCost:160,desc:'식량 소모↑↑ 적 매우 공격적 돌발↑↑'},
 };
 var DIFF=DIFFICULTY.normal;
 var G={};
@@ -819,8 +819,8 @@ function actionTrain(){
   });
 }
 function actionGather(){
-  if(G.troop<15){addLog('lw','병력 부족');return;}
-  G.troop-=15;const bonus=ourCastles().length*r(5,15);
+  if(G.troop<25){addLog('lw','병력 부족');return;}
+  G.troop-=25;const bonus=ourCastles().length*r(3,10);
   const gn=r(DIFF.gatherMin,DIFF.gatherMax)+bonus,fn=r(20,60);G.gold+=gn;G.food+=fn;floatGold(gn);floatFood(fn);
   addLog('lg',`💰 수집! API+${gn} 식량+${fn}${bonus>0?' (성보너스+'+bonus+')':''}`);
   if(Math.random()<0.1){addLog('le','⚠ 매복! 병력-20');G.troop=Math.max(0,G.troop-20);}
@@ -828,7 +828,7 @@ function actionGather(){
 }
 function actionRecruit(){
   if(G.gold<DIFF.recruitCost){addLog('lw',`API 부족(${DIFF.recruitCost})`);return;}
-  G.gold-=DIFF.recruitCost;const gn=r(50,110);G.troop+=gn;floatTroop(gn);floatGold(-DIFF.recruitCost);
+  G.gold-=DIFF.recruitCost;const gn=r(30,70);G.troop+=gn;floatTroop(gn);floatGold(-DIFF.recruitCost);
   addLog('lg',`🪖 병력+${gn} (총${G.troop})`);useAction();
 }
 function actionWeapon(){

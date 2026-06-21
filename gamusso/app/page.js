@@ -107,6 +107,13 @@ export default function Home(){
         </div>
       </div>
 
+      <div className={styles.container}>
+        <div className={styles.secLabel}>⚔ GAME</div>
+        <a href="/game.html" className={styles.gameBtn}>
+          ⚔ 삼국지 운영 연습 게임 · 천하쟁탈전
+        </a>
+      </div>
+
       <footer className={styles.footer}>가무소 팬페이지 · 팬메이드 비공식 페이지</footer>
     </main>
   )

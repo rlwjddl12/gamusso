@@ -248,4 +248,22 @@
   .cardName {
     font-size: 13px;
   }
+}.gameBtn {
+  display: block;
+  text-align: center;
+  padding: 16px;
+  background: #1a0a0a;
+  border: 1px solid #8b1a1a;
+  border-radius: 8px;
+  color: #c8972a;
+  font-size: 1rem;
+  font-weight: 700;
+  text-decoration: none;
+  letter-spacing: .1em;
+  transition: all .2s;
+}
+.gameBtn:hover {
+  background: #2a1010;
+  border-color: #c8972a;
+  transform: translateY(-2px);
 }

@@ -115,7 +115,7 @@ export default function Home(){
       {news.length > 0 && (
         <div className={styles.container}>
           <div className={styles.newsHeader}>
-                  <div className={styles.updateLog}>🔧 v0.6.23 · 방송국 링크 수정, 뉴스 섹션 추가</div>
+              
           </div>
           <div className={styles.newsGrid}>
             {news.map((n, i) => (

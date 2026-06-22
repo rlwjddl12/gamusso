@@ -122,7 +122,7 @@ export default function Home(){
                 {n.img && <img src={n.img} alt={n.title} className={styles.newsImg} />}
                 <div className={styles.newsBody}>
                   <div className={styles.newsMeta}>
-                    <span className={styles.newsTag}>{n.tag}</span>
+                  <span className={styles.newsTag} data-tag={n.tag}>{n.tag}</span>
                     <span className={styles.newsDate}>{n.date}</span>
                   </div>
                   <div className={styles.newsTitle}>{n.title}</div>

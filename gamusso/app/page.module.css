@@ -320,11 +320,14 @@
   justify-content: space-between;
   margin-bottom: 1.5rem;
 }
-.newsHeader .secLabel {
-  margin-bottom: 0;
+.newsHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
 }
 .updateLog {
   font-size: 11px;
   color: #555;
 }
-}
+

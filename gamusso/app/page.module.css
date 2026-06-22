@@ -30,17 +30,6 @@
   color: #ff4444;
   margin-bottom: 1.5rem;
 }
-.newsHeader {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 1.5rem;
-}
-.updateLog {
-  font-size: 11px;
-  color: #555;
-}
 .cardGrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
@@ -300,7 +289,6 @@
 }
 .newsTag[data-tag="이벤트"] {
   background: #5bc4a0;
-}
 }
 .newsDate {
   font-size: 11px;

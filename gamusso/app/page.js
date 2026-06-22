@@ -45,6 +45,8 @@ function MemberCard({ m, isLive }) {
 
 export default function Home(){
   const [liveData, setLiveData] = useState({})
+  const [news, setNews] = useState([])
+
   useEffect(() => {
     const check = async () => {
       const results = await Promise.all(
@@ -63,6 +65,13 @@ export default function Home(){
     check()
     const t = setInterval(check, 3 * 60 * 1000)
     return () => clearInterval(t)
+  }, [])
+
+  useEffect(() => {
+    fetch('/news.json')
+      .then(r => r.json())
+      .then(setNews)
+      .catch(() => {})
   }, [])
 
   const liveMembers = CREW.filter(m => liveData[m.uid]?.live)
@@ -100,6 +109,27 @@ export default function Home(){
         </div>
       )}
 
+      {news.length > 0 && (
+        <div className={styles.container}>
+          <div className={styles.secLabel}>📰 가무소식</div>
+          <div className={styles.newsGrid}>
+            {news.map((n, i) => (
+              <div key={i} className={styles.newsCard}>
+                {n.img && <img src={n.img} alt={n.title} className={styles.newsImg} />}
+                <div className={styles.newsBody}>
+                  <div className={styles.newsMeta}>
+                    <span className={styles.newsTag}>{n.tag}</span>
+                    <span className={styles.newsDate}>{n.date}</span>
+                  </div>
+                  <div className={styles.newsTitle}>{n.title}</div>
+                  <div className={styles.newsDesc}>{n.desc}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className={styles.container}>
         <div className={styles.secLabel}>● 오프라인 멤버</div>
         <div className={styles.cardGrid}>
@@ -107,7 +137,7 @@ export default function Home(){
         </div>
       </div>
 
-            <div className={styles.container}>
+      <div className={styles.container}>
         <div className={styles.secLabel}>⚔ GAME</div>
         <a href="/game.html" className={styles.gameBtn}>
           ⚔ 삼국지 운영 연습 게임 · 천하쟁탈전

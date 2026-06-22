@@ -1,37 +1,1484 @@
-<!DOCTYPE html>
+<<!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>⚔ 삼국지 운영게임</title>
 <style>
-body {
-  background: #f5efe0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  margin: 0;
-  font-family: 'Noto Sans KR', sans-serif;
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+
+:root{
+  --ink:#1a1208;
+  --paper:#f5efe0;
+  --aged:#e8dfc8;
+  --aged2:#dfd0b0;
+  --red:#8b1a1a;
+  --red2:#c0392b;
+  --gold:#c8972a;
+  --gold2:#a07820;
+  --faded:#7a6a50;
+  --border:#c4a96a;
+  --border2:#d4b97a;
+  --green:#2a6e2a;
+  --blue:#1a3a7a;
+  --panel:#ede3cc;
 }
-.box {
-  text-align: center;
-  padding: 40px;
-  border: 2px solid #c4a96a;
-  border-radius: 8px;
-  background: #ede3cc;
+
+*{box-sizing:border-box;margin:0;padding:0;}
+
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:'Noto Sans KR',sans-serif;
+  min-height:100vh;
+  background-image:
+    repeating-linear-gradient(0deg,transparent,transparent 39px,rgba(196,169,106,.13) 39px,rgba(196,169,106,.13) 40px),
+    repeating-linear-gradient(90deg,transparent,transparent 39px,rgba(196,169,106,.05) 39px,rgba(196,169,106,.05) 40px);
 }
-h1 { color: #8b1a1a; font-size: 2rem; margin-bottom: 12px; }
-p { color: #7a6a50; font-size: 1rem; }
-a { display: inline-block; margin-top: 20px; color: #c8972a; text-decoration: none; font-weight: 700; }
+
+#app{max-width:1000px;margin:0 auto;padding:12px;position:relative;}
+
+/* 타이틀 */
+.game-title{text-align:center;padding:14px 0 6px;}
+.game-title h1{
+  font-family:'Noto Serif KR',serif;
+  font-size:2.1rem;font-weight:900;
+  color:var(--red);
+  letter-spacing:.3em;
+  text-shadow:2px 2px 0 rgba(139,26,26,.15);
+}
+.game-title .sub{font-size:.7rem;color:var(--faded);letter-spacing:.22em;margin-top:3px;}
+
+/* 패널 */
+.panel{
+  background:var(--aged);
+  border:1px solid var(--border);
+  border-radius:3px;
+  padding:11px;
+}
+.panel-title{
+  font-family:'Noto Serif KR',serif;
+  font-size:.82rem;font-weight:700;
+  color:var(--red);
+  letter-spacing:.12em;
+  border-bottom:1px solid var(--border);
+  padding-bottom:5px;margin-bottom:8px;
+}
+
+/* 설정 */
+.setup-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+@media(max-width:640px){.setup-grid{grid-template-columns:1fr;}}
+.member-row{display:grid;grid-template-columns:82px 50px 38px 38px 38px 38px;gap:3px;align-items:center;margin-bottom:4px;}
+.stat-hdr{display:grid;grid-template-columns:82px 50px 38px 38px 38px 38px;gap:3px;font-size:.62rem;color:var(--faded);margin-bottom:3px;padding-bottom:3px;border-bottom:1px solid var(--border);}
+
+input[type=text],input[type=number],select{
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:2px;
+  padding:3px 5px;
+  font-size:.74rem;
+  font-family:'Noto Sans KR',sans-serif;
+  color:var(--ink);
+  width:100%;
+  outline:none;
+}
+input:focus,select:focus{border-color:var(--gold2);box-shadow:0 0 4px rgba(200,151,42,.25);}
+input[type=number]{text-align:center;}
+.rrow{display:flex;gap:8px;align-items:center;margin-bottom:5px;}
+.rrow label{font-size:.72rem;color:var(--faded);min-width:50px;}
+.rrow input{width:70px;}
+
+/* 버튼 */
+.btn{
+  background:var(--red);
+  color:#f5efe0;
+  border:none;
+  padding:8px 20px;
+  font-family:'Noto Serif KR',serif;
+  font-size:.85rem;
+  letter-spacing:.12em;
+  cursor:pointer;
+  border-radius:2px;
+  transition:background .18s;
+}
+.btn:hover{background:#6e1515;}
+.btn-sm{padding:3px 9px;font-size:.7rem;letter-spacing:.03em;font-family:'Noto Sans KR',sans-serif;}
+.btn-gold{background:var(--gold);color:var(--ink);}
+.btn-gold:hover{background:var(--gold2);}
+.btn-blue{background:var(--blue);color:#f5efe0;}
+.btn-blue:hover{background:#0f2a5a;}
+.btn-green{background:var(--green);color:#f5efe0;}
+.btn-green:hover{background:#1a4e1a;}
+.btn-center{display:block;margin:12px auto 0;}
+
+/* 난이도 */
+.diff-btn{background:#fff;border:1px solid var(--border);border-radius:2px;padding:8px 4px;font-size:.72rem;font-family:'Noto Sans KR',sans-serif;color:var(--faded);cursor:pointer;text-align:center;line-height:1.5;transition:all .15s;}
+.diff-btn:hover{border-color:var(--gold);color:var(--ink);}
+.diff-btn.active{background:var(--ink);color:var(--gold);border-color:var(--ink);}
+.diff-btn small{font-size:.6rem;display:block;}
+.diff-btn.active small{color:#aaa;}
+
+/* 시간 바 */
+.time-bar{
+  background:#1a1208;
+  color:#ece0c0;
+  padding:8px 12px;
+  border-radius:3px;
+  margin-bottom:8px;
+  display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;
+}
+.day-num{color:var(--gold);font-family:'Noto Serif KR',serif;font-size:1.05rem;font-weight:700;}
+.phase-name{color:#ffcc88;font-size:.78rem;margin-left:5px;}
+.time-sub{font-size:.64rem;color:#aaa;margin-top:2px;}
+.time-prog{display:flex;gap:3px;margin-top:4px;}
+.tp{width:20px;height:5px;border-radius:1px;background:rgba(255,255,255,.1);}
+.tp.done{background:var(--gold);}
+.tp.cur{background:#ff9944;animation:curP .8s ease-in-out infinite;}
+@keyframes curP{0%,100%{opacity:1;}50%{opacity:.4;}}
+
+/* 자원 */
+.res-item{display:flex;justify-content:space-between;padding:2px 0;border-bottom:1px solid rgba(196,169,106,.3);font-size:.72rem;}
+.res-item:last-child{border-bottom:none;}
+.res-val{font-weight:700;color:var(--red);font-family:'Noto Serif KR',serif;}
+.res-val.low{color:#cc2222;animation:blink .65s infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.25;}}
+
+/* pip */
+.pips{display:flex;gap:2px;flex-wrap:wrap;}
+.pip{width:12px;height:5px;border-radius:1px;background:rgba(196,169,106,.2);border:1px solid var(--border);}
+.pip.w{background:var(--gold);border-color:var(--gold2);}
+.pip.a{background:var(--blue);border-color:#0f2a5a;}
+
+/* 멤버 */
+.mmini{display:flex;justify-content:space-between;align-items:center;padding:3px 4px;border-bottom:1px solid rgba(196,169,106,.2);cursor:pointer;border-radius:2px;font-size:.68rem;transition:background .1s;}
+.mmini:hover{background:rgba(196,169,106,.2);}
+.mmini.hid .mn{color:var(--gold);}
+.mmini .mn{font-weight:500;color:var(--ink);}
+.mmini .ms{color:var(--faded);font-size:.6rem;}
+.mmini.zzz{opacity:.45;}
+.mmini.zzz .mn::after{content:' 💤';}
+
+/* 적 */
+.erow{display:flex;justify-content:space-between;align-items:center;padding:3px 4px;border-bottom:1px solid rgba(196,169,106,.2);font-size:.67rem;}
+
+/* 성 */
+.castle-grid{display:flex;flex-wrap:wrap;gap:3px;margin-bottom:5px;}
+.castle{width:40px;height:40px;border-radius:2px;border:1px solid transparent;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:all .15s;position:relative;}
+.castle:hover{transform:scale(1.1);z-index:2;box-shadow:0 2px 8px rgba(139,26,26,.25);}
+.castle .cname{font-size:.46rem;line-height:1.1;text-align:center;}
+.castle .cicon{font-size:.68rem;}
+.castle.ours{background:#d4e8c4;border-color:#5a8a3a;}
+.castle.enemy{border-color:rgba(139,26,26,.35);}
+
+/* 로그 */
+.log-area{
+  background:#111008;
+  color:#e8dfc0;
+  font-size:.74rem;
+  line-height:1.75;
+  padding:10px;
+  border-radius:3px;
+  height:200px;
+  overflow-y:auto;
+  margin-bottom:7px;
+  font-family:'Noto Sans KR',sans-serif;
+}
+.log-area::-webkit-scrollbar{width:4px;}
+.log-area::-webkit-scrollbar-track{background:#1a1208;}
+.log-area::-webkit-scrollbar-thumb{background:#5a4a2a;}
+.lt{color:#ffd060;font-weight:700;margin-top:4px;}
+.le{color:#ff6666;}
+.ln{color:#99bbff;}
+.lg{color:#66dd66;}
+.lw{color:#ffcc44;}
+.lp{color:#ffaaff;}
+
+/* 액션 */
+.action-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;}
+@media(max-width:540px){.action-grid{grid-template-columns:repeat(2,1fr);}}
+.ab{background:#fff;border:1px solid var(--border);border-radius:2px;padding:6px 4px;font-size:.67rem;font-family:'Noto Sans KR',sans-serif;color:var(--ink);cursor:pointer;text-align:center;transition:all .15s;line-height:1.3;}
+.ab:hover{background:var(--aged2);border-color:var(--border2);}
+.ab:disabled{opacity:.3;cursor:not-allowed;}
+.ab .cost{color:var(--red);font-size:.59rem;display:block;margin-top:1px;}
+.ab.hl{border-color:var(--gold);background:#fdf5e0;}
+
+/* 게임 레이아웃 */
+.game-layout{display:grid;grid-template-columns:190px 1fr;gap:8px;}
+@media(max-width:660px){.game-layout{grid-template-columns:1fr;}}
+.sidebar{display:flex;flex-direction:column;gap:7px;}
+
+/* 저장 바 */
+.save-bar{display:flex;gap:5px;align-items:center;justify-content:flex-end;margin-bottom:6px;flex-wrap:wrap;}
+
+/* 이벤트 팝업 */
+.event-overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:200;pointer-events:none;background:rgba(10,6,2,.5);}
+.event-popup{
+  background:var(--paper);
+  border:4px solid var(--border);
+  border-radius:6px;
+  padding:32px 52px;
+  text-align:center;
+  animation:eventPop .4s cubic-bezier(.175,.885,.32,1.275);
+  pointer-events:none;
+  box-shadow:0 16px 60px rgba(26,18,8,.65), 0 0 0 8px rgba(196,169,106,.15);
+  min-width:320px;
+  position:relative;
+}
+.event-popup::before{content:'';position:absolute;inset:6px;border:1px solid var(--border);border-radius:3px;pointer-events:none;opacity:.5;}
+.event-popup.red{border-color:var(--red2);background:#fff5f5;box-shadow:0 16px 60px rgba(139,26,26,.5),0 0 0 8px rgba(139,26,26,.1);}
+.event-popup.gold{border-color:var(--gold);background:#fffbee;box-shadow:0 16px 60px rgba(200,151,42,.5),0 0 0 8px rgba(200,151,42,.1);}
+@keyframes eventPop{0%{transform:scale(.4) rotate(-3deg);opacity:0;}70%{transform:scale(1.05) rotate(.5deg);}100%{transform:scale(1) rotate(0deg);opacity:1;}}
+@keyframes eventFadeOut{0%{opacity:1;transform:scale(1);}100%{opacity:0;transform:scale(.92) translateY(-10px);}}
+.ep-label{font-size:.75rem;color:var(--faded);letter-spacing:.25em;margin-bottom:6px;font-family:'Noto Serif KR',serif;text-transform:uppercase;}
+.ep-main{font-size:2.4rem;color:var(--red);font-family:'Noto Serif KR',serif;font-weight:900;letter-spacing:.05em;line-height:1.1;}
+.event-popup.red .ep-main{color:var(--red2);}
+.event-popup.gold .ep-main{color:var(--gold);}
+.ep-sub{font-size:.9rem;color:var(--faded);margin-top:8px;line-height:1.5;}
+.ep-divider{width:60px;height:2px;background:var(--border);margin:10px auto;}
+
+/* 플래시 */
+@keyframes flashWin{0%,100%{background:var(--aged);}50%{background:#d4e8c4;}}
+@keyframes flashLose{0%,100%{background:var(--aged);}50%{background:#f0d0d0;}}
+@keyframes shakeX{0%,100%{transform:translateX(0);}15%{transform:translateX(-8px);}30%{transform:translateX(8px);}45%{transform:translateX(-6px);}60%{transform:translateX(6px);}75%{transform:translateX(-3px);}90%{transform:translateX(3px);}}
+.flash-green{animation:flashWin .6s ease;}
+.flash-red{animation:flashLose .6s ease;}
+.shake{animation:shakeX .6s ease;}
+/* 자원 변화 숫자 팝업 */
+.res-float{
+  position:fixed;
+  font-family:'Noto Serif KR',serif;
+  font-size:1.2rem;
+  font-weight:900;
+  pointer-events:none;
+  z-index:300;
+  animation:floatUp 1.8s ease forwards;
+  text-shadow:1px 1px 0 rgba(255,255,255,.8);
+}
+@keyframes floatUp{0%{opacity:1;transform:translateY(0) scale(1);}60%{opacity:1;transform:translateY(-50px) scale(1.1);}100%{opacity:0;transform:translateY(-90px) scale(.9);}}
+/* 턴 요약 */
+.turn-summary{
+  position:fixed;inset:0;
+  background:rgba(26,18,8,.82);
+  display:flex;align-items:center;justify-content:center;
+  z-index:150;
+  animation:fadeIn .3s ease;
+}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+.turn-summary-box{
+  background:var(--paper);
+  border:2px solid var(--border);
+  border-radius:6px;
+  padding:24px 32px;
+  max-width:460px;width:92%;
+  max-height:80vh;overflow-y:auto;
+  box-shadow:0 16px 48px rgba(26,18,8,.6);
+  position:relative;
+}
+.turn-summary-box::before{content:'';position:absolute;inset:5px;border:1px solid rgba(196,169,106,.3);border-radius:4px;pointer-events:none;}
+.ts-title{font-family:'Noto Serif KR',serif;font-size:1rem;color:var(--red);font-weight:700;letter-spacing:.15em;text-align:center;margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid var(--border);}
+.ts-item{display:flex;align-items:flex-start;gap:8px;padding:5px 0;border-bottom:1px solid rgba(196,169,106,.2);font-size:.8rem;line-height:1.5;}
+.ts-item:last-child{border-bottom:none;}
+.ts-icon{font-size:.9rem;flex-shrink:0;width:20px;text-align:center;}
+/* 미니맵 */
+.minimap{display:grid;gap:2px;margin-bottom:4px;}
+.mm-cell{
+  border-radius:2px;
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.5rem;
+  font-weight:700;
+  transition:transform .12s;
+  border:1px solid rgba(0,0,0,.12);
+  overflow:hidden;
+  white-space:nowrap;
+  color:rgba(0,0,0,.7);
+  text-shadow:0 0 3px rgba(255,255,255,.8);
+}
+.mm-cell:hover{transform:scale(1.15);z-index:5;box-shadow:0 2px 8px rgba(0,0,0,.3);}
+.mm-cell.mm-player{background:linear-gradient(135deg,#7cbd5a,#4a9a2a);}
+.mm-cell.mm-neutral{background:#ccc;}
+
+/* 설명 카드 */
+.info-card{background:#111008;color:#e0d4a8;padding:8px;border-radius:3px;font-size:.64rem;line-height:1.8;}
+.info-card .ic-title{color:#ffd060;font-weight:700;margin-bottom:2px;font-size:.67rem;}
+
+/* 모달 */
+.modal-bg{position:fixed;inset:0;background:rgba(26,18,8,.7);display:flex;align-items:center;justify-content:center;z-index:100;}
+.modal{background:var(--paper);border:1px solid var(--border2);border-radius:4px;padding:18px;max-width:420px;width:92%;max-height:84vh;overflow-y:auto;box-shadow:0 8px 32px rgba(26,18,8,.4);}
+.modal h3{font-family:'Noto Serif KR',serif;color:var(--red);margin-bottom:10px;letter-spacing:.08em;}
+.modal p{font-size:.78rem;line-height:1.7;margin-bottom:7px;color:var(--faded);}
+.modal-btns{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px;}
+.sbar-row{display:flex;align-items:center;gap:7px;margin-bottom:5px;font-size:.72rem;}
+.sbar-lbl{width:38px;color:var(--faded);}
+.sbar{flex:1;height:7px;background:rgba(196,169,106,.2);border-radius:3px;overflow:hidden;}
+.sbar-fill{height:100%;border-radius:3px;}
+.sbar-val{width:22px;text-align:right;font-weight:700;font-size:.7rem;}
+.sel-list{max-height:210px;overflow-y:auto;}
+.sel-item{padding:5px 8px;border-bottom:1px solid var(--border);cursor:pointer;font-size:.75rem;display:flex;justify-content:space-between;border-radius:2px;}
+.sel-item:hover{background:var(--aged);}
+.sel-item.dis{opacity:.35;pointer-events:none;}
+.war-result{text-align:center;}
+.war-result .big{font-size:1.4rem;font-family:'Noto Serif KR',serif;color:var(--red);margin:8px 0;}
+.war-result .big.win{color:var(--green);}
+.esetup-row{display:grid;grid-template-columns:24px 1fr 70px;gap:4px;align-items:center;margin-bottom:5px;}
+.esetup-hdr{display:grid;grid-template-columns:24px 1fr 70px;gap:4px;font-size:.63rem;color:var(--faded);margin-bottom:3px;padding-bottom:3px;border-bottom:1px solid var(--border);}
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:var(--aged);}
+::-webkit-scrollbar-thumb{background:var(--border);}
 </style>
 </head>
 <body>
-<div class="box">
+<div id="app">
+<div class="game-title">
   <h1>⚔ 삼국지 운영게임</h1>
-  <p>🔧 현재 점검 중입니다.</p>
-  <p>잠시 후 다시 찾아주세요!</p>
-  <a href="/">← 메인으로 돌아가기</a>
+  <div class="sub">9일간의 천하쟁탈전 — 마인크래프트 RPG 서버 대전</div>
 </div>
+
+<!-- 설정 화면 -->
+<div id="screen-setup">
+  <div class="setup-grid">
+    <div class="panel" style="grid-column:1/-1">
+      <div class="panel-title">👥 아군 문파 설정 (10명)</div>
+      <div class="stat-hdr"><span>이름</span><span>구분</span><span style="text-align:center">지력</span><span style="text-align:center">무공</span><span style="text-align:center">수면</span><span style="text-align:center">돌발</span></div>
+      <div id="member-inputs"></div>
+      <div style="margin-top:6px;padding:6px 8px;background:#1a0a0a;border:1px solid #4a1a1a;border-radius:2px;font-size:.68rem;color:#ff8888">
+        ⚠️ <b style="color:var(--red)">히든 멤버 정확히 3명을 선택해야 게임을 시작할 수 있습니다.</b> 히든=전투력+25, 훈련 효율 2배.
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">💰 초기 자원 설정</div>
+      <div class="rrow"><label style="min-width:70px">총 API</label><input type="number" id="res-total" value="2000" min="500" max="99999" oninput="previewDistrib()"></div>
+      <div style="margin-top:5px;font-size:.7rem;color:var(--text2)">총 API가 골드/식량/병력/명성으로 <b style="color:var(--green)">랜덤 분배</b>됩니다.</div>
+      <div id="res-preview" style="margin-top:5px;background:var(--aged2);border:1px solid var(--border);border-radius:2px;padding:8px;font-size:.76rem;color:var(--ink);line-height:2.0">숫자 입력 시 미리보기</div>
+      <button class="btn btn-sm btn-gold" onclick="previewDistrib()" style="margin-top:5px">🎲 미리보기</button>
+      <div style="margin-top:5px;font-size:.65rem;color:var(--red)">⚠ 매 턴 식량 대량 차감. 수급 어려움!</div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">🔴 적 문파 5팀</div>
+      <div class="esetup-hdr"><span>#</span><span>이름</span><span style="text-align:center">API</span></div>
+      <div id="enemy-name-rows"></div>
+      <div style="margin-top:5px;font-size:.65rem;color:var(--text2)">💡 능력치는 API 기준 랜덤 분배 (비공개)</div>
+    </div>
+  </div>
+  <div class="panel" style="margin-top:8px">
+    <div class="panel-title">⚙ 난이도 선택</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:7px" id="diff-btns">
+      <button class="diff-btn" id="diff-easy" onclick="setDiff('easy')">🟢 쉬움<br><small>초보자용</small></button>
+      <button class="diff-btn active" id="diff-normal" onclick="setDiff('normal')">🟡 보통<br><small>표준</small></button>
+      <button class="diff-btn" id="diff-hard" onclick="setDiff('hard')">🔴 어려움<br><small>고수용</small></button>
+    </div>
+    <div id="diff-desc" style="margin-top:6px;font-size:.68rem;color:var(--text2);text-align:center">표준 밸런스</div>
+  </div>
+  <button class="btn btn-center" onclick="startGame()">⚔ 9일 천하쟁탈전 시작</button>
+  <div style="margin-top:8px;text-align:center">
+    <button class="btn btn-sm btn-blue" onclick="loadGame()">📂 저장된 게임 불러오기</button>
+  </div>
+</div>
+
+<!-- 게임 화면 -->
+<div id="screen-game" style="display:none">
+  <div class="save-bar">
+    <span style="font-size:.65rem;color:var(--text2)" id="save-status"></span>
+    <button class="btn btn-sm" onclick="saveGame()">💾 저장</button>
+    <button class="btn btn-sm btn-blue" onclick="loadGame()">📂 불러오기</button>
+    <button class="btn btn-sm btn-red" onclick="if(confirm('처음부터?'))location.reload()">↩ 처음</button>
+  </div>
+  <div class="time-bar">
+    <div>
+      <div><span class="day-num" id="day-display"></span><span style="font-size:.75rem;color:var(--text2)">일차</span><span class="phase-name" id="phase-display"></span></div>
+      <div class="time-sub"><span id="turn-display"></span>/36턴 &nbsp;|&nbsp; 동맹: <span id="ally-display" style="color:var(--blue)">없음</span></div>
+      <div class="time-prog" id="day-prog"></div>
+    </div>
+    <div style="text-align:right">
+      <div style="font-size:.75rem">🏯 아군 성: <span id="our-castle-count" style="color:var(--gold);font-family:'Black Han Sans',sans-serif;font-size:.95rem"></span>개</div>
+      <div style="font-size:.65rem;color:var(--text2);margin-top:2px">행동: <span id="action-count" style="color:var(--green);font-weight:700"></span>회 남음</div>
+    </div>
+  </div>
+  <div class="game-layout">
+    <div class="sidebar">
+      <div class="panel">
+        <div class="panel-title">💰 자원</div>
+        <div id="resource-display"></div>
+        <div style="margin-top:5px;font-size:.6rem;color:var(--text2)">🗡 <span id="wlv-display"></span></div>
+        <div class="pips" id="wpips" style="margin-top:2px"></div>
+        <div style="margin-top:3px;font-size:.6rem;color:var(--text2)">🛡 <span id="alv-display"></span></div>
+        <div class="pips" id="apips" style="margin-top:2px"></div>
+        <button class="btn btn-sm" onclick="showPowerInfo()" style="margin-top:6px;width:100%;font-size:.62rem;padding:4px;letter-spacing:.02em">⚡ 전력 분석</button>
+      </div>
+      <div class="panel">
+        <div class="panel-title">👥 아군 <span style="font-size:.58rem;font-weight:400;color:var(--text2)">(클릭=상세)</span></div>
+        <div id="team-display"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">🔴 적 문파</div>
+        <div id="enemies-display"></div>
+      </div>
+    </div>
+    <div>
+      <div class="panel" style="margin-bottom:7px;padding:10px 10px 6px">
+        <div class="panel-title">🗺 성 지도 <span style="font-size:.58rem;font-weight:400;color:var(--faded)">(클릭=상세)</span></div>
+        <div id="castle-map" style="position:relative;overflow:hidden"></div>
+        <div style="margin-top:7px;display:grid;grid-template-columns:1fr 1fr;gap:5px">
+          <div class="info-card">
+            <div class="ic-title">⚡ 아군 총 전력</div>
+            <div>무공평균 × 2</div>
+            <div>+ 병력 ÷ 6</div>
+            <div>+ 명성 ÷ 15</div>
+            <div>+ 무기 보너스</div>
+            <div style="color:var(--gold);margin-top:2px">👉 높을수록 공격·방어 유리</div>
+          </div>
+          <div class="info-card">
+            <div class="ic-title" style="color:var(--red)">🏰 성 방어력</div>
+            <div>수비병 수</div>
+            <div id="wall-mul-display" style="color:#ffd060"></div>
+            <div>= 성 수비 전력</div>
+            <div style="color:var(--gold);margin-top:2px">👉 성 방어로 수비병↑</div>
+          </div>
+        </div>
+      </div>
+      <div class="log-area" id="log-area"></div>
+      <div class="action-title" id="action-title-display" style="font-family:'Black Han Sans',sans-serif;font-size:.75rem;color:var(--green);margin-bottom:5px;letter-spacing:.05em">▶ 행동 선택</div>
+      <div class="action-grid" id="action-grid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 이벤트 팝업 -->
+<div class="event-overlay" id="event-overlay" style="display:none">
+  <div class="event-popup" id="event-popup">
+    <div class="ep-label" id="ep-label"></div>
+    <div class="ep-main" id="ep-main"></div>
+    <div class="ep-sub" id="ep-sub"></div>
+  </div>
+</div>
+
+<div id="modal-container"></div>
+</div>
+
+<script>
+const DNAMES=['가습기','새잎','기찬하','야뿌','딩굴','단수아','희꾸미','연보라','연치민','쨈도은'];
+const EDEF=[
+  {name:'버컴퍼니', color:'#4488ff'},
+  {name:'버인협회', color:'#44cc66'},
+  {name:'지력사무소',color:'#ff8844'},
+  {name:'꾸한성',   color:'#cc44cc'},
+  {name:'홍피스',   color:'#ffcc44'},
+];
+const PHASES=['🌅 아침','☀ 점심','🌙 밤','🌃 새벽'];
+const CNAMES=['낙양','장안','허창','업성','건업','성도','형주','합비','수춘','양평','안정','천수','한중','남정','평원','북해','제남','임치','서주','소패','강릉','당양','신야','번성','완성','상용','방릉','무릉','계양','영릉'];
+const WLEVS=[
+  {name:'목검+0',bonus:0,cost:0,rate:100},{name:'목검+1',bonus:15,cost:40,rate:95},
+  {name:'철검+2',bonus:38,cost:70,rate:88},{name:'철검+3',bonus:70,cost:100,rate:80},
+  {name:'강철도+4',bonus:115,cost:140,rate:70},{name:'강철도+5',bonus:175,cost:180,rate:58},
+  {name:'신병기+6',bonus:255,cost:240,rate:45},{name:'신병기+7',bonus:355,cost:300,rate:35},
+  {name:'천상검+8',bonus:480,cost:380,rate:27},{name:'천상검+9',bonus:630,cost:460,rate:20},
+  {name:'전설+10',bonus:810,cost:560,rate:15},{name:'전설+11★',bonus:1020,cost:0,rate:0},
+];
+const ALEVS=[
+  {name:'천옷+0',def:0,cost:0,rate:100},{name:'천옷+1',def:10,cost:35,rate:95},
+  {name:'가죽+2',def:25,cost:65,rate:88},{name:'가죽+3',def:48,cost:95,rate:80},
+  {name:'철갑+4',def:80,cost:130,rate:70},{name:'철갑+5',def:122,cost:170,rate:58},
+  {name:'강철갑+6',def:175,cost:220,rate:45},{name:'강철갑+7',def:240,cost:280,rate:35},
+  {name:'천룡갑+8',def:318,cost:350,rate:27},{name:'천룡갑+9',def:410,cost:430,rate:20},
+  {name:'신성갑+10',def:518,cost:520,rate:15},{name:'신성갑+11★',def:645,cost:0,rate:0},
+];
+const DIFFICULTY={
+  easy:{label:'🟢 쉬움',foodPerTurn:70,gatherMin:60,gatherMax:130,aggrMul:0.45,wallMul:2.2,rogueMul:0.3,sleepRate:0.2,defeatMul:1.1,foodWarn:90,actions:8,lootMin:110,lootMax:220,recruitCost:90,desc:'식량 소모↓ 수집↑ 적 공격성↓ 돌발↓'},
+  normal:{label:'🟡 보통',foodPerTurn:120,gatherMin:35,gatherMax:75,aggrMul:0.75,wallMul:3.8,rogueMul:0.58,sleepRate:0.4,defeatMul:1.5,foodWarn:150,actions:8,lootMin:70,lootMax:150,recruitCost:110,desc:'표준 밸런스'},
+  hard:{label:'🔴 어려움',foodPerTurn:180,gatherMin:20,gatherMax:50,aggrMul:0.95,wallMul:5.0,rogueMul:0.75,sleepRate:0.52,defeatMul:1.9,foodWarn:210,actions:7,lootMin:45,lootMax:100,recruitCost:145,desc:'식량 소모↑↑ 적 매우 공격적 돌발↑↑'},
+};
+var DIFF=DIFFICULTY.normal;
+var G={};
+const r=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
+
+// ===== 이벤트 팝업 =====
+let epTimer=null;
+function showEvent(label,main,sub,type='',duration=3000){
+  const ov=document.getElementById('event-overlay');
+  const pp=document.getElementById('event-popup');
+  document.getElementById('ep-label').textContent=label;
+  document.getElementById('ep-main').textContent=main;
+  document.getElementById('ep-sub').textContent=sub||'';
+  // 구분선 추가
+  if(!document.getElementById('ep-divider')){
+    const div=document.createElement('div');
+    div.id='ep-divider';div.className='ep-divider';
+    pp.insertBefore(div, document.getElementById('ep-sub'));
+  }
+  pp.className='event-popup'+(type?' '+type:'');
+  pp.style.animation='none';
+  void pp.offsetWidth;
+  pp.style.animation='eventPop .4s cubic-bezier(.175,.885,.32,1.275)';
+  ov.style.display='flex';ov.style.opacity='1';
+  if(epTimer)clearTimeout(epTimer);
+  epTimer=setTimeout(()=>{
+    ov.style.transition='opacity .5s';
+    ov.style.opacity='0';
+    setTimeout(()=>{ov.style.display='none';ov.style.opacity='1';ov.style.transition='';},500);
+  },duration);
+}
+
+function flashPanel(id,type){
+  const el=document.getElementById(id);
+  if(!el)return;
+  el.classList.remove('flash-green','flash-red','shake');
+  void el.offsetWidth;
+  if(type==='win')el.classList.add('flash-green');
+  else if(type==='lose')el.classList.add('flash-red','shake');
+}
+
+
+// 자원 변화 플로팅 숫자
+function floatNum(val, color, anchorId){
+  const anchor = document.getElementById(anchorId||'resource-display');
+  if(!anchor) return;
+  const rect = anchor.getBoundingClientRect();
+  const el = document.createElement('div');
+  el.className = 'res-float';
+  el.textContent = (val>0?'+':'')+val;
+  el.style.color = color||'#2a6e2a';
+  el.style.left = (rect.left + rect.width/2 - 20) + 'px';
+  el.style.top = (rect.top + window.scrollY - 10) + 'px';
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(), 1900);
+}
+function floatGold(v){floatNum(v, v>0?'#c8972a':'#cc2222', 'resource-display');}
+function floatFood(v){floatNum(v, v>0?'#2a6e2a':'#cc2222', 'resource-display');}
+function floatTroop(v){floatNum(v, v>0?'#1a3a7a':'#cc2222', 'resource-display');}
+function floatFame(v){floatNum(v, '#8a2a8a', 'resource-display');}
+
+// 화면 흔들기 (더 강하게)
+function shakeScreen(intensity='normal'){
+  const app=document.getElementById('app');
+  app.style.animation='none';
+  void app.offsetWidth;
+  if(intensity==='hard'){
+    app.style.animation='shakeX .6s ease';
+    // 배경도 붉게
+    document.body.style.background='#3a1a1a';
+    setTimeout(()=>{document.body.style.background='';},400);
+  } else {
+    app.style.animation='shakeX .4s ease';
+  }
+  setTimeout(()=>app.style.animation='',700);
+}
+
+// 턴 요약
+let turnLog = [];
+function logTurnEvent(icon, text, type=''){
+  turnLog.push({icon, text, type});
+}
+function showTurnSummary(day, phase, cb){
+  if(turnLog.length===0){turnLog=[];if(cb)cb();return;}
+  const items = turnLog.map(e=>`
+    <div class="ts-item">
+      <span class="ts-icon">${e.icon}</span>
+      <span style="color:${e.type==='bad'?'#8b1a1a':e.type==='good'?'#2a6e2a':'#5a4a30'}">${e.text}</span>
+    </div>`).join('');
+  const box = document.createElement('div');
+  box.className='turn-summary';
+  box.innerHTML=`<div class="turn-summary-box">
+    <div class="ts-title">⏱ ${day}일차 ${phase} — 턴 종료 요약</div>
+    <div>${items}</div>
+    <div style="text-align:center;margin-top:14px">
+      <button class="btn btn-sm" onclick="this.closest('.turn-summary').remove();${cb?'resumeTurnCb()':''}" style="letter-spacing:.1em">다음 턴 ▶</button>
+    </div>
+  </div>`;
+  document.body.appendChild(box);
+  turnLog=[];
+  if(cb) window.resumeTurnCb=cb;
+}
+// ===== SETUP =====
+function setDiff(key){
+  DIFF=DIFFICULTY[key];
+  document.querySelectorAll('.diff-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('diff-'+key).classList.add('active');
+  document.getElementById('diff-desc').textContent=DIFF.desc;
+}
+
+function distribResources(total){
+  const w=[Math.random(),Math.random(),Math.random(),Math.random()];
+  const s=w.reduce((a,b)=>a+b,0);
+  const n=w.map(x=>x/s);
+  const min=[0.10,0.40,0.08,0.05];
+  const rem=1-min.reduce((a,b)=>a+b,0);
+  const f=min.map((m,i)=>m+n[i]*rem);
+  return{gold:Math.floor(total*f[0]),food:Math.floor(total*f[1]),troop:Math.floor(total*f[2]),fame:Math.floor(total*f[3])};
+}
+
+function previewDistrib(){
+  const total=+document.getElementById('res-total').value||2000;
+  const d=distribResources(total);
+  document.getElementById('res-preview').innerHTML=
+    `<div style="display:flex;justify-content:space-between;padding:2px 0;border-bottom:1px solid var(--border)"><span style="color:var(--faded)">💰 API(골드)</span><b style="color:var(--gold2);font-size:.82rem">${d.gold}</b></div>`+
+    `<div style="display:flex;justify-content:space-between;padding:2px 0;border-bottom:1px solid var(--border)"><span style="color:var(--faded)">🌾 식량</span><b style="color:var(--green);font-size:.82rem">${d.food}</b></div>`+
+    `<div style="display:flex;justify-content:space-between;padding:2px 0;border-bottom:1px solid var(--border)"><span style="color:var(--faded)">⚔ 병력</span><b style="color:var(--blue);font-size:.82rem">${d.troop}</b></div>`+
+    `<div style="display:flex;justify-content:space-between;padding:2px 0"><span style="color:var(--faded)">⭐ 명성</span><b style="color:#8a2a8a;font-size:.82rem">${d.fame}</b></div>`;
+}
+
+function initSetup(){
+  const c=document.getElementById('member-inputs');c.innerHTML='';
+  for(let i=0;i<10;i++){
+    const d=document.createElement('div');d.className='member-row';
+    d.innerHTML=`<input type="text" id="mn${i}" value="${DNAMES[i]}" maxlength="7">
+      <select id="mh${i}" style="font-size:.68rem"><option value="0">일반</option><option value="1">히든</option></select>
+      <input type="number" id="mj${i}" value="${r(20,80)}" min="1" max="100">
+      <input type="number" id="mm${i}" value="${r(20,80)}" min="1" max="100">
+      <input type="number" id="ms${i}" value="${r(10,70)}" min="1" max="100">
+      <input type="number" id="md${i}" value="${r(5,50)}" min="1" max="100">`;
+    c.appendChild(d);
+  }
+  renderESetup();
+}
+
+function renderESetup(){
+  document.getElementById('enemy-name-rows').innerHTML=EDEF.map((e,i)=>`
+    <div class="esetup-row">
+      <span style="font-size:.68rem;color:var(--text2)">${i+1}</span>
+      <input type="text" id="en${i}" value="${e.name}" maxlength="8">
+      <input type="number" id="eapi${i}" value="2000" min="500" max="99999">
+    </div>`).join('');
+}
+
+function startGame(){
+  const members=[];let hc=0;
+  for(let i=0;i<10;i++){
+    const h=document.getElementById(`mh${i}`).value==='1';
+    if(h)hc++;
+    members.push({name:document.getElementById(`mn${i}`).value||DNAMES[i],ji:+document.getElementById(`mj${i}`).value||50,mu:+document.getElementById(`mm${i}`).value||50,su:+document.getElementById(`ms${i}`).value||30,dol:+document.getElementById(`md${i}`).value||20,hidden:h,sleeping:false,sleepTurns:0});
+  }
+  if(hc!==3){alert('히든 멤버를 정확히 3명 선택해주세요!');return;}
+  const enemies=[];
+  for(let i=0;i<5;i++){
+    const mems=Array.from({length:10},(_,j)=>({mu:r(15,85),hidden:j<3}));
+    const eTotal=+document.getElementById(`eapi${i}`).value||2000;
+    const ed=distribResources(eTotal);
+    const e={name:document.getElementById(`en${i}`).value||EDEF[i].name,color:EDEF[i].color,troop:ed.troop,gold:ed.gold,food:ed.food,fame:ed.fame,aggr:r(35,90),alive:true,power:0,members:mems};
+    e.power=calcEP(e);enemies.push(e);
+  }
+  const castles=[];
+  for(let i=0;i<5;i++) castles.push({id:i,name:CNAMES[i],owner:'player',troop:r(30,70)});
+  for(let ei=0;ei<5;ei++) for(let ci=0;ci<5;ci++){const idx=5+ei*5+ci;castles.push({id:idx,name:CNAMES[idx],owner:ei,troop:r(40,100)});}
+  const totalAPI=+document.getElementById('res-total').value||2000;
+  const distrib=distribResources(totalAPI);
+  G={turn:1,day:1,phaseIdx:0,actionsLeft:DIFF.actions,members,enemies,allies:[],castles,gold:distrib.gold,food:distrib.food,troop:distrib.troop,fame:distrib.fame,weaponLv:0,armorLv:0,over:false};
+  document.getElementById('screen-setup').style.display='none';
+  document.getElementById('screen-game').style.display='block';
+  addLog('lt','=== 천하쟁탈전 개막! 9일 안에 최다 성을 점령하라! ===');
+  addLog('lg',`아군 10명(히든3) | 성 5개 | 분배 → API:${distrib.gold} 식량:${distrib.food} 병력:${distrib.troop} 명성:${distrib.fame}`);
+  addLog('lw','⚠ 매 턴 식량 대량 차감. 식량 0 → 즉시 게임오버!');
+  showEvent('게임 시작!','천하쟁탈전','9일간의 전쟁이 시작됩니다','gold');
+  renderAll();
+}
+
+// ===== SAVE/LOAD =====
+function saveGame(){
+  try{localStorage.setItem('sanguk_v3',JSON.stringify(G));localStorage.setItem('sanguk_v3_time',new Date().toLocaleString('ko-KR'));setSS('✅ 저장 완료');}
+  catch(e){setSS('❌ 저장 실패');}
+}
+function loadGame(){
+  try{
+    const d=localStorage.getItem('sanguk_v3');
+    if(!d){alert('저장 데이터 없음');return;}
+    const t=localStorage.getItem('sanguk_v3_time')||'?';
+    if(!confirm(`저장: ${t}\n불러오시겠습니까?`))return;
+    G=JSON.parse(d);
+    document.getElementById('screen-setup').style.display='none';
+    document.getElementById('screen-game').style.display='block';
+    addLog('lt',`=== 저장 불러오기 (${G.day}일차 ${PHASES[G.phaseIdx]}) ===`);
+    renderAll();
+  }catch(e){alert('불러오기 실패');}
+}
+function setSS(msg){const el=document.getElementById('save-status');if(el){el.textContent=msg;setTimeout(()=>el.textContent='',3000);}}
+
+// ===== CORE =====
+function calcEP(e){
+  const wBonus = (e.weaponLv||0) < WLEVS.length ? WLEVS[(e.weaponLv||0)].bonus * 0.6 : 0;
+  const aBonus = (e.armorLv||0) < ALEVS.length ? ALEVS[(e.armorLv||0)].def * 0.4 : 0;
+  return Math.floor(e.members.reduce((s,m)=>s+m.mu+(m.hidden?20:0),0)/10+e.troop/8+e.fame/15+wBonus+aBonus);
+}
+function myPower(){
+  const act=G.members.filter(m=>!m.sleeping);
+  if(!act.length)return 0;
+  return Math.floor(act.reduce((s,m)=>s+m.mu+(m.hidden?25:0),0)/act.length*2+G.troop/6+G.fame/15+WLEVS[G.weaponLv].bonus);
+}
+function powerBreakdown(){
+  const act=G.members.filter(m=>!m.sleeping);
+  if(!act.length)return{total:0,member:0,troop:0,fame:0,weapon:0,memberDetail:[]};
+  const memberScore=Math.floor(act.reduce((s,m)=>s+m.mu+(m.hidden?25:0),0)/act.length*2);
+  const troopScore=Math.floor(G.troop/6);const fameScore=Math.floor(G.fame/15);const weaponScore=WLEVS[G.weaponLv].bonus;
+  return{total:memberScore+troopScore+fameScore+weaponScore,member:memberScore,troop:troopScore,fame:fameScore,weapon:weaponScore,memberDetail:act.map(m=>({name:m.name,score:m.mu+(m.hidden?25:0),hidden:m.hidden}))};
+}
+function defRate(){return Math.min(0.65,ALEVS[G.armorLv].def/500);}
+function ourCastles(){return G.castles.filter(c=>c.owner==='player');}
+function totalTurn(){return(G.day-1)*4+G.phaseIdx+1;}
+
+function addLog(cls,txt){
+  const el=document.getElementById('log-area');
+  const d=document.createElement('div');d.className=cls;d.textContent=txt;
+  el.appendChild(d);el.scrollTop=el.scrollHeight;
+}
+
+function useAction(){
+  G.actionsLeft--;
+  if(G.actionsLeft<=0){
+    enemyAI();checkRogue();
+    G.phaseIdx++;
+    if(G.phaseIdx>=4){G.phaseIdx=0;G.day++;}
+    G.actionsLeft=DIFF.actions;
+    if(G.day>9){checkFinal();return;}
+    checkSleep();
+    G.members.forEach(m=>{if(!m.hidden){m.mu=Math.min(100,m.mu+r(0,0));}});
+    G.food=Math.max(0,G.food-DIFF.foodPerTurn);
+    if(G.food<=0){addLog('le','💀 식량 고갈! 게임오버...');checkGameOver();return;}
+    if(G.troop<=0){addLog('le','💀 병력 전멸! 게임오버...');checkGameOver();return;}
+    if(ourCastles().length===0){addLog('le','💀 아군 성 전부 함락! 게임오버...');checkGameOver();return;}
+
+    // 랜덤 API 수급 이벤트
+    const apiEvents = [
+      {rate:0.15, min:30, max:80,  msg:'💰 광고 수익 정산!', type:'good'},
+      {rate:0.12, min:50, max:120, msg:'🎁 후원 폭탄!', type:'good'},
+      {rate:0.10, min:20, max:60,  msg:'📦 협찬 도착!', type:'good'},
+      {rate:0.08, min:80, max:200, msg:'🏆 이벤트 상금!', type:'good'},
+      {rate:0.06, min:150,max:300, msg:'💎 메가 후원!', type:'good'},
+      {rate:0.10, min:-40,max:-15, msg:'💸 서버 비용 청구...', type:'bad'},
+      {rate:0.08, min:-60,max:-25, msg:'⚠ 장비 수리비 지출...', type:'bad'},
+    ];
+    for(const ev of apiEvents){
+      if(Math.random()<ev.rate){
+        const amt=r(Math.abs(ev.min),Math.abs(ev.max))*(ev.min<0?-1:1);
+        G.gold=Math.max(0,G.gold+amt);
+        floatGold(amt);
+        addLog(ev.type==='good'?'lg':'le',`${ev.msg} API${amt>0?'+':''}${amt}`);
+        logTurnEvent(ev.type==='good'?'💰':'💸', `${ev.msg} ${amt>0?'+':''}${amt}G`, ev.type==='good'?'good':'bad');
+        break;
+      }
+    }
+    if(G.food<DIFF.foodWarn){addLog('lw',`⚠ 식량 위기! (${G.food})`);logTurnEvent('⚠','식량 위기! '+G.food+'남음','bad');}
+    if(G.gold<20){addLog('lw',`⚠ API 위기! (${G.gold}G)`);logTurnEvent('⚠','API 위기! '+G.gold+'G','bad');}
+    if(G.troop<30){addLog('lw','⚠ 병력 위기!');logTurnEvent('⚠','병력 위기! '+G.troop+'명','bad');}
+    floatFood(-DIFF.foodPerTurn);
+    addLog('lt',`━━ ${G.day}일차 ${PHASES[G.phaseIdx]} (${totalTurn()}/36턴) 식량-${DIFF.foodPerTurn} ━━`);
+    checkGameOver();
+    if(!G.over){
+      const nextDay=G.day; const nextPhase=PHASES[G.phaseIdx];
+      showTurnSummary(nextDay-G.phaseIdx===0?nextDay-1:nextDay, PHASES[(G.phaseIdx+3)%4], ()=>renderAll());
+      return;
+    }
+  }
+  renderAll();
+}
+
+function checkSleep(){
+  G.members.forEach(m=>{
+    if(m.sleeping){m.sleepTurns--;if(m.sleepTurns<=0){m.sleeping=false;addLog('lg',`☀ ${m.name} 복귀!`);}}
+    else if(m.su>=65&&Math.random()<DIFF.sleepRate){m.sleeping=true;m.sleepTurns=r(1,2);addLog('lw',`😴 ${m.name} 수면 문제 ${m.sleepTurns}턴`);}
+  });
+}
+
+function checkRogue(){
+  G.members.forEach(m=>{
+    if(m.sleeping)return;
+    const ch=(m.dol/100)*DIFF.rogueMul+(m.su>=65?0.2:0);
+    if(Math.random()<ch){
+      [
+        ()=>{const c=r(40,120);G.gold=Math.max(0,G.gold-c);m.mu=Math.min(100,m.mu+r(2,5));addLog('le',`💥 ${m.name} 돌발! 강화템 -${c}G`);showEvent('돌발행동!',m.name,'혼자 강화템 구매...','red');},
+        ()=>{const d=r(15,40);G.troop=Math.max(0,G.troop-d);addLog('le',`💥 ${m.name} 돌발! 무단출격 병력-${d}`);},
+        ()=>{G.fame=Math.max(0,G.fame-r(8,20));addLog('le',`💥 ${m.name} 돌발! 분쟁 유발 명성↓`);},
+        ()=>{m.mu=Math.min(100,m.mu+r(2,6));addLog('lg',`⚡ ${m.name} 돌발! 광훈련 무공↑`);showEvent('돌발행동!',m.name+'각성!','혼자 광훈련 무공 상승');},
+        ()=>{const f=r(15,50);G.food=Math.max(0,G.food-f);addLog('le',`💥 ${m.name} 돌발! 식량 낭비 -${f}`);},
+        ()=>{if(G.weaponLv>0){G.weaponLv--;addLog('le',`💥 ${m.name} 돌발! 무기 파손!`);showEvent('무기 파손!','레벨 다운','돌발행동으로 무기 파손','red');}},
+      ][r(0,5)]();
+    }
+  });
+}
+
+function enemyAI(){
+  const alive=G.enemies.filter(e=>e.alive&&!G.allies.includes(e.name));
+  alive.forEach(e=>{
+    // 적도 턴마다 강화
+    if(!e.weaponLv) e.weaponLv=0;
+    if(!e.armorLv) e.armorLv=0;
+    if(e.gold>60 && e.weaponLv<10 && Math.random()<0.4){
+      e.weaponLv++;e.gold=Math.max(0,e.gold-60);
+      addLog('ln',`🔴 ${e.name}: ⚔무기 강화! ${WLEVS[e.weaponLv].name} (전투력+${Math.floor(WLEVS[e.weaponLv].bonus*0.6)})`);
+      e.power=calcEP(e);
+    } else if(e.gold>50 && e.armorLv<10 && Math.random()<0.35){
+      e.armorLv++;e.gold=Math.max(0,e.gold-50);
+      addLog('ln',`🔴 ${e.name}: 🛡갑옷 강화! ${ALEVS[e.armorLv].name} (방어+${Math.floor(ALEVS[e.armorLv].def*0.4)})`);
+      e.power=calcEP(e);
+    }
+    const roll=r(0,100);
+    if(roll<e.aggr*DIFF.aggrMul){
+      const ours=ourCastles();
+      if(ours.length&&e.troop>60){
+        const target=ours[r(0,ours.length-1)];
+        const ep=e.power+r(-10,10);
+        const dp=target.troop*DIFF.wallMul+myPower()*0.3+ALEVS[G.armorLv].def;
+        addLog('ln',`🔴 ${e.name} → [${target.name}] 공격!`);
+        if(ep>dp*0.9){
+          e.troop=Math.max(0,e.troop-r(10,30));target.owner=G.enemies.indexOf(e);target.troop=r(30,70);
+          G.fame=Math.max(0,G.fame-r(10,25));
+          addLog('le',`😱 [${target.name}] 함락! ${e.name}에게 빼앗김`);
+          flashPanel('screen-game','lose');shakeScreen('hard');
+          logTurnEvent('😱','['+target.name+'] '+e.name+'에게 함락!','bad');
+          showEvent('성 함락!','['+target.name+']',e.name+'에게 빼앗겼습니다','red',3500);
+        }else{
+          e.troop=Math.max(0,e.troop-r(20,50));
+          addLog('lg',`✅ [${target.name}] 방어 성공!`);
+          flashPanel('screen-game','win');
+        }
+        e.power=calcEP(e);
+      }
+    }else if(roll<65){e.troop+=r(40,100);addLog('ln',`🔴 ${e.name}: 병력 보충`);}
+    else if(roll<82){e.gold+=r(50,130);addLog('ln',`🔴 ${e.name}: 자원 수집`);}
+    else{
+      const others=alive.filter(o=>o!==e);
+      if(others.length&&e.troop>80){
+        const te=others[r(0,others.length-1)];const tei=G.enemies.indexOf(te);
+        const tc=G.castles.filter(c=>c.owner===tei);
+        if(tc.length){const ch=tc[r(0,tc.length-1)];if(e.troop>te.troop*0.7){ch.owner=G.enemies.indexOf(e);ch.troop=r(30,60);addLog('lp',`⚔ ${e.name}이(가) ${te.name}의 [${ch.name}] 점령!`);}}
+      }
+    }
+    e.power=calcEP(e);
+  });
+}
+
+// ===== ACTIONS =====
+function actionTrain(){
+  showSelMember('훈련할 멤버',(i)=>{
+    if(G.food<80){addLog('lw','식량 부족(80)');return;}
+    const m=G.members[i];if(m.sleeping){addLog('lw',`${m.name}: 수면 중`);return;}
+    G.food-=80;const jg=r(0,2)+(m.hidden?r(0,1):0),mg=r(0,2)+(m.hidden?r(0,1):0);
+    m.ji=Math.min(100,m.ji+jg);m.mu=Math.min(100,m.mu+mg);
+    addLog('lg',`💪 ${m.name} 훈련! 지+${jg} 무+${mg}${m.hidden?' [히든+보너스]':''}`);
+    useAction();
+  });
+}
+function actionGather(){
+  if(G.troop<20){addLog('lw','병력 부족');return;}
+  G.troop-=20;const bonus=ourCastles().length*r(4,12);
+  const gn=r(DIFF.gatherMin,DIFF.gatherMax)+bonus,fn=r(20,60);G.gold+=gn;G.food+=fn;floatGold(gn);floatFood(fn);
+  addLog('lg',`💰 수집! API+${gn} 식량+${fn}${bonus>0?' (성보너스+'+bonus+')':''}`);
+  if(Math.random()<0.1){addLog('le','⚠ 매복! 병력-20');G.troop=Math.max(0,G.troop-20);}
+  useAction();
+}
+function actionRecruit(){
+  if(G.gold<DIFF.recruitCost){addLog('lw',`API 부족(${DIFF.recruitCost})`);return;}
+  G.gold-=DIFF.recruitCost;const gn=r(40,90);G.troop+=gn;floatTroop(gn);floatGold(-DIFF.recruitCost);
+  addLog('lg',`🪖 병력+${gn} (총${G.troop})`);useAction();
+}
+function actionWeapon(){
+  const cur=G.weaponLv;if(cur>=WLEVS.length-1){addLog('lg','최고 무기!');return;}
+  const nxt=WLEVS[cur+1];
+  showUpgrade('⚔ 무기 강화',WLEVS[cur].name,nxt.name,`전투력+${WLEVS[cur].bonus}`,`전투력+${nxt.bonus}`,nxt.rate,nxt.cost,G.gold,'var(--gold)',()=>{
+    G.gold-=nxt.cost;const ok=Math.random()*100<nxt.rate;
+    if(ok){G.weaponLv++;addLog('lg',`✨ 무기 강화! ${WLEVS[G.weaponLv].name}${G.weaponLv===11?' 🌟MAX':''}`);showEvent('강화 성공!',WLEVS[G.weaponLv].name,'','gold');}
+    else{addLog('le',`💔 무기 강화 실패(${nxt.rate}%)`);showEvent('강화 실패','골드만 소모','다시 도전하세요','red');}
+    useAction();
+  });
+}
+function actionArmor(){
+  const cur=G.armorLv;if(cur>=ALEVS.length-1){addLog('lg','최고 갑옷!');return;}
+  const nxt=ALEVS[cur+1];
+  showUpgrade('🛡 갑옷 강화',ALEVS[cur].name,nxt.name,`방어${ALEVS[cur].def}`,`방어${nxt.def}`,nxt.rate,nxt.cost,G.gold,'var(--blue)',()=>{
+    G.gold-=nxt.cost;const ok=Math.random()*100<nxt.rate;
+    if(ok){G.armorLv++;addLog('lg',`✨ 갑옷 강화! ${ALEVS[G.armorLv].name} 피해감소${Math.floor(defRate()*100)}%`);showEvent('강화 성공!',ALEVS[G.armorLv].name,'','gold');}
+    else{addLog('le',`💔 갑옷 강화 실패(${nxt.rate}%)`);showEvent('강화 실패','골드만 소모','다시 도전하세요','red');}
+    useAction();
+  });
+}
+function actionSleep(){
+  showSelMember('수면 관리',(i)=>{
+    const m=G.members[i];
+    if(m.sleeping){m.sleeping=false;m.sleepTurns=0;m.su=Math.max(5,m.su-22);addLog('lg',`☀ ${m.name} 복귀!`);}
+    else{m.sleeping=true;m.sleepTurns=2;m.su=Math.max(5,m.su-25);m.dol=Math.max(1,m.dol-7);addLog('lg',`😴 ${m.name} 수면 치료 2턴`);}
+    useAction();
+  });
+}
+function actionFame(){
+  if(G.gold<50){addLog('lw','API 부족(50)');return;}
+  G.gold-=50;const gn=r(20,65)+Math.floor(G.fame/18);G.fame+=gn;floatFame(gn);
+  addLog('lg',`⭐ 명성 이벤트 +${gn}`);
+  logTurnEvent('⭐','명성 이벤트 +'+gn,'good');useAction();
+}
+function actionDiplo(){
+  if(G.fame<40){addLog('lw','명성 부족(40)');return;}
+  const tgts=G.enemies.filter(e=>e.alive&&!G.allies.includes(e.name));
+  if(!tgts.length){addLog('lw','외교 대상 없음');return;}
+  showSelEnemy('동맹 제안',tgts,(name)=>{
+    G.fame-=40;const e=G.enemies.find(x=>x.name===name);
+    const ok=G.fame/Math.max(1,e.fame)>0.65&&Math.random()<0.5;
+    if(ok){G.allies.push(name);addLog('lg',`🤝 ${name} 동맹!`);logTurnEvent('🤝',name+' 동맹 체결!','good');showEvent('동맹 체결!',name,'전투 지원 +35',3000);}
+    else addLog('lw',`❌ ${name} 거절`);
+    useAction();
+  });
+}
+function actionAttack(){
+  if(G.troop<50){addLog('lw','병력 부족(50)');return;}
+  const tgts=G.castles.filter(c=>c.owner!=='player');
+  if(!tgts.length){addLog('lw','공격할 성 없음!');return;}
+  showSelCastle('공격할 성',tgts,(cid)=>{
+    const castle=G.castles[cid];
+    const ow=typeof castle.owner==='number'?G.enemies[castle.owner].name:'중립';
+    const allyB=G.allies.length*35;const mp=myPower()+allyB;
+    const dp=castle.troop*DIFF.wallMul+(typeof castle.owner==='number'?G.enemies[castle.owner].power*0.6:30);
+    const ownEnemy = typeof castle.owner==='number' ? G.enemies[castle.owner] : null;
+    addLog('lt',`⚔ [${castle.name}] 공격! (${ow})`);
+    if(ownEnemy){
+      const ewLv=ownEnemy.weaponLv||0;const eaLv=ownEnemy.armorLv||0;
+      const eWName = ewLv < WLEVS.length ? WLEVS[ewLv].name : '전설MAX';
+      const eAName = eaLv < ALEVS.length ? ALEVS[eaLv].name : '신성MAX';
+      const eWBonus = ewLv < WLEVS.length ? Math.floor(WLEVS[ewLv].bonus*0.6) : 0;
+      const eABonus = eaLv < ALEVS.length ? Math.floor(ALEVS[eaLv].def*0.4) : 0;
+      addLog('ln',`  ┌ 적 [${ownEnemy.name}] 장비 ─────────────`);
+      addLog('ln',`  │ ⚔ ${eWName} (전투력+${eWBonus})`);
+      addLog('ln',`  │ 🛡 ${eAName} (방어+${eABonus})`);
+      addLog('ln',`  ├ 아군 장비 ──────────────────────`);
+      addLog('ln',`  │ ⚔ ${WLEVS[G.weaponLv].name} (전투력+${WLEVS[G.weaponLv].bonus})`);
+      addLog('ln',`  └ 🛡 ${ALEVS[G.armorLv].name} (피해감소${Math.floor(defRate()*100)}%)`);
+    }
+    addLog('lw',`전력:${mp} vs 수성:${Math.floor(dp)}`);
+    const beforeTroop=G.troop;const win=(mp+r(-20,20))>dp;
+    const dmg=r(20,Math.max(30,Math.floor(dp*0.3)));
+    if(win){
+      const prev=castle.owner;const troopLost=Math.floor(dmg*0.4*(1-defRate()));
+      castle.owner='player';castle.troop=r(20,50);G.troop=Math.max(0,G.troop-troopLost);
+      const loot=r(DIFF.lootMin,DIFF.lootMax);G.gold+=loot;G.fame+=r(20,45);floatGold(loot);logTurnEvent('🏯','['+castle.name+'] 점령! API+'+loot,'good');
+      if(typeof prev==='number'){const e=G.enemies[prev];const eb=e.troop;e.troop=Math.max(0,e.troop-r(30,70));e.power=calcEP(e);addLog('ln',`  ${e.name} 병력 ${eb}→${e.troop}`);}
+      addLog('lg',`🏯 [${castle.name}] 점령 성공!`);
+      addLog('lg',`  병력 ${beforeTroop}→${G.troop} (-${troopLost}) | 전력 ${mp}→${myPower()}`);
+      addLog('lg',`  💰 전리품 API+${loot}`);
+      flashPanel('screen-game','win');
+      showEvent('성 점령!','['+castle.name+']','전리품 API+'+loot,'gold',3500);
+    }else{
+      const rd=Math.floor(dmg*DIFF.defeatMul*(1-defRate()));
+      G.troop=Math.max(0,G.troop-rd);G.fame=Math.max(0,G.fame-r(20,45));
+      addLog('le',`💀 [${castle.name}] 공격 실패!`);
+      addLog('le',`  병력 ${beforeTroop}→${G.troop} (-${rd}) | 전력 ${mp}→${myPower()}`);
+      flashPanel('screen-game','lose');shakeScreen('hard');
+      floatTroop(-rd);logTurnEvent('💀','['+castle.name+'] 공격 실패. 병력-'+rd,'bad');
+      showEvent('공격 실패','['+castle.name+']','병력 -'+rd+'  후퇴!','red',3500);
+    }
+    useAction();
+  });
+}
+function actionDefend(){
+  const ours=ourCastles();if(!ours.length){addLog('lw','우리 성 없음');return;}
+  showSelCastle('방어 강화할 성',ours,(cid)=>{
+    if(G.gold<60){addLog('lw','API 부족(60)');return;}
+    G.gold-=60;const ca=G.castles[cid];const before=ca.troop;const b=r(20,50);ca.troop+=b;
+    addLog('lg',`🛡 [${ca.name}] 수비 강화!`);logTurnEvent('🛡','['+ca.name+'] 수비 강화 +'+b,'good');
+    addLog('lg',`  수비병 ${before}→${ca.troop} (+${b}) | 수성 전력 약 ${Math.floor(ca.troop*DIFF.wallMul)}`);
+    useAction();
+  });
+}
+function actionFight(){
+  addLog('le','👊 팀 드잡이 발생!');
+  G.members.forEach(m=>{
+    const change=r(0,1)===0?r(5,25):-r(5,20);
+    m.dol=Math.min(100,Math.max(1,m.dol+change));
+    if(change>0)addLog('le',`  ${m.name}: 돌발+${change}(${m.dol})`);
+    else addLog('lg',`  ${m.name}: 돌발${change}(${m.dol})`);
+  });
+  showEvent('팀 드잡이!','내부 분쟁 발생','돌발 수치 랜덤 변동','red');
+  useAction();
+}
+function actionCheers(){
+  addLog('lg','🫂 팀 전체 위로 시간!');
+  G.members.forEach(m=>{const muD=r(1,5),suD=r(5,18),dolD=r(5,18);m.mu=Math.max(1,m.mu-muD);m.su=Math.max(1,m.su-suD);m.dol=Math.max(1,m.dol-dolD);addLog('lg',`  ${m.name}: 무공-${muD} 수면-${suD} 돌발-${dolD}`);});
+  showEvent('팀 위로','분위기 안정화','수면·돌발 수치 감소');
+  useAction();
+}
+
+// ===== FINAL =====
+function showPowerInfo(){
+  const pb=powerBreakdown();
+  const sleeping=G.members.filter(m=>m.sleeping);
+  const bar=(v,color)=>`<div style="flex:1;height:9px;background:rgba(74,255,106,.1);border-radius:3px;overflow:hidden"><div style="width:${Math.min(100,v)}%;height:100%;background:${color};border-radius:3px"></div></div>`;
+  const rows=pb.memberDetail.map(m=>{
+    const grade=m.score>=90?'S':m.score>=70?'A':m.score>=50?'B':m.score>=30?'C':'D';
+    const gc={'S':'var(--gold)','A':'var(--green)','B':'var(--blue)','C':'#aaa','D':'var(--red)'}[grade];
+    return `<div style="display:grid;grid-template-columns:70px 1fr 32px 28px;gap:4px;align-items:center;padding:5px 0;border-bottom:1px solid var(--border);font-size:.78rem">
+      <span style="color:${m.hidden?'var(--gold)':'var(--white)'};font-weight:700">${m.name}${m.hidden?' ★':''}</span>
+      ${bar(m.score,'#cc4444')}
+      <span style="text-align:right;font-weight:700;color:var(--white);font-size:.82rem">+${m.score}</span>
+      <span style="text-align:center;font-weight:900;color:${gc};font-size:.85rem">${grade}</span>
+    </div>`;}).join('');
+  showModal(`<h3>⚡ 전력 분석</h3>
+    <div style="background:#050a05;padding:12px;border-radius:4px;margin-bottom:10px;text-align:center;border:1px solid var(--border)">
+      <div style="font-size:.65rem;color:#aaa;margin-bottom:2px">현재 총 전력</div>
+      <div style="font-size:2.2rem;font-weight:900;color:var(--green);font-family:'Black Han Sans',sans-serif;text-shadow:0 0 20px rgba(74,255,106,.4)">${pb.total}</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:10px">
+      <div style="background:#050a05;padding:7px;border-radius:3px;text-align:center;border:1px solid var(--border)">
+        <div style="font-size:.6rem;color:#aaa">👥 멤버</div>
+        <div style="font-size:1rem;font-weight:700;color:#cc4444">+${pb.member}</div>
+        <div style="font-size:.58rem;color:#aaa">무공평균×2</div>
+      </div>
+      <div style="background:#050a05;padding:7px;border-radius:3px;text-align:center;border:1px solid var(--border)">
+        <div style="font-size:.6rem;color:#aaa">⚔ 병력</div>
+        <div style="font-size:1rem;font-weight:700;color:var(--blue)">+${pb.troop}</div>
+        <div style="font-size:.58rem;color:#aaa">${G.troop}÷6</div>
+      </div>
+      <div style="background:#050a05;padding:7px;border-radius:3px;text-align:center;border:1px solid var(--border)">
+        <div style="font-size:.6rem;color:#aaa">⭐ 명성</div>
+        <div style="font-size:1rem;font-weight:700;color:#ffaaff">+${pb.fame}</div>
+        <div style="font-size:.58rem;color:#aaa">${G.fame}÷15</div>
+      </div>
+      <div style="background:#050a05;padding:7px;border-radius:3px;text-align:center;border:1px solid var(--border)">
+        <div style="font-size:.6rem;color:#aaa">🗡 무기</div>
+        <div style="font-size:1rem;font-weight:700;color:var(--gold)">+${pb.weapon}</div>
+        <div style="font-size:.58rem;color:#aaa">${WLEVS[G.weaponLv].name}</div>
+      </div>
+    </div>
+    <div style="font-size:.7rem;font-weight:700;margin-bottom:5px;color:var(--text)">멤버별 기여 (무공+히든★보너스25)</div>
+    <div>${rows}</div>
+    ${sleeping.length?`<div style="margin-top:7px;font-size:.65rem;color:var(--red)">💤 제외(수면중): ${sleeping.map(m=>m.name).join(', ')}</div>`:''}
+    <div style="margin-top:8px;background:#050a05;padding:8px;border-radius:3px;border:1px solid var(--border)">
+      <div style="font-size:.7rem;font-weight:700;color:#ccc;margin-bottom:6px">⚔ 팀별 강화 현황</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px">
+        <div style="background:#0a0a0a;padding:5px;border-radius:3px;border:1px solid #333">
+          <div style="font-size:.6rem;color:#aaa">🟢 아군</div>
+          <div style="font-size:.72rem;color:var(--green);font-weight:700">⚔ ${WLEVS[G.weaponLv].name}</div>
+          <div style="font-size:.72rem;color:#88ccff;font-weight:700">🛡 ${ALEVS[G.armorLv].name}</div>
+        </div>
+        ${G.enemies.filter(e=>e.alive).map(e=>`
+        <div style="background:#0a0a0a;padding:5px;border-radius:3px;border:1px solid #333">
+          <div style="font-size:.6rem;color:#aaa" style="color:${e.color}">🔴 ${e.name}</div>
+          <div style="font-size:.72rem;color:#ff9999;font-weight:700">⚔ ${WLEVS[Math.min(e.weaponLv||0,WLEVS.length-1)].name}</div>
+          <div style="font-size:.72rem;color:#99ccff;font-weight:700">🛡 ${ALEVS[Math.min(e.armorLv||0,ALEVS.length-1)].name}</div>
+        </div>`).join('')}
+      </div>
+    </div>
+    <div style="margin-top:7px;background:#050a05;padding:6px;border-radius:3px;font-size:.65rem;color:#ccc;border:1px solid var(--border)">
+      💡 등급: S(90↑) A(70↑) B(50↑) C(30↑) D(30↓)<br>🎯 전력 높을수록 공격 성공률↑ 방어율↑
+    </div>
+  `,[{label:'닫기',fn:closeModal}]);
+}
+
+function calcFinalScore(castles, turn){
+  return castles*1000 + G.fame + G.gold + turn*10;
+}
+
+async function saveScore(name, score, castles, turn){
+  try{
+    const res = await fetch('https://black-art-16c8.7412369a.workers.dev/score', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({name, score, castles, fame:G.fame, gold:G.gold, turn})
+    });
+    const data = await res.json();
+    return data.rank;
+  }catch(e){return null;}
+}
+
+async function fetchLeaderboard(){
+  try{
+    const res = await fetch('https://black-art-16c8.7412369a.workers.dev/score');
+    return await res.json();
+  }catch(e){return [];}
+}
+
+function renderLeaderboard(lb, myScore){
+  if(!lb.length) return '<div style="color:var(--faded);text-align:center;padding:10px">아직 기록 없음</div>';
+  return lb.map((s,i)=>{
+    const isMe = s.score===myScore;
+    const medal = i===0?'🥇':i===1?'🥈':i===2?'🥉':`${i+1}.`;
+    return `<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 6px;border-radius:3px;${isMe?'background:rgba(200,151,42,.15);':''}border-bottom:1px solid var(--border)">
+      <span style="font-size:.75rem;color:${isMe?'var(--gold)':'var(--text2)'};min-width:20px">${medal}</span>
+      <span style="font-size:.8rem;font-weight:700;color:${isMe?'var(--gold)':'var(--white)'};flex:1;margin:0 8px">${s.name}</span>
+      <span style="font-size:.75rem;color:var(--green);font-weight:700">${s.score.toLocaleString()}</span>
+      <span style="font-size:.6rem;color:var(--faded);margin-left:6px">성${s.castles}</span>
+    </div>`;
+  }).join('');
+}
+
+function showNameInput(score, castles, turn, onSubmit){
+  document.getElementById('modal-container').innerHTML=`
+    <div class="modal-bg">
+      <div class="modal" style="text-align:center">
+        <h3 style="color:var(--gold);font-family:'Noto Serif KR',serif;letter-spacing:.2em">🏆 NAME ENTRY</h3>
+        <p style="font-size:.72rem;color:var(--faded);margin:6px 0">점수: <b style="color:var(--green)">${score.toLocaleString()}</b></p>
+        <input id="score-name" maxlength="4" placeholder="이름(4자)" style="
+          width:100%;padding:10px;margin:10px 0;
+          background:#050a05;border:2px solid var(--gold);
+          color:var(--gold);font-size:1.2rem;font-weight:700;
+          text-align:center;border-radius:4px;letter-spacing:.15em;
+          font-family:'Noto Serif KR',serif;
+        ">
+        <div class="modal-btns">
+          <button class="btn btn-gold" onclick="submitScore(${score},${castles},${turn})">등록</button>
+          <button class="btn" onclick="closeModal()">건너뛰기</button>
+        </div>
+      </div>
+    </div>`;
+  document.getElementById('score-name').focus();
+}
+
+window.submitScore = async (score, castles, turn) => {
+  const name = document.getElementById('score-name').value.trim() || '익명';
+  closeModal();
+  const rank = await saveScore(name, score, castles, turn);
+  const lb = await fetchLeaderboard();
+  document.getElementById('modal-container').innerHTML=`
+    <div class="modal-bg">
+      <div class="modal">
+        <h3 style="color:var(--gold);font-family:'Noto Serif KR',serif;text-align:center;letter-spacing:.15em">🏆 명예의 전당</h3>
+        ${rank?`<p style="text-align:center;font-size:.72rem;color:var(--green);margin:4px 0">${name} · ${rank}위 등록!</p>`:''}
+        <div style="margin:10px 0">${renderLeaderboard(lb, score)}</div>
+        <div class="modal-btns">
+          <button class="btn btn-gold" onclick="location.reload()">다시 시작</button>
+        </div>
+      </div>
+    </div>`;
+};
+
+function checkFinal(){
+  G.over=true;
+  const ours=ourCastles().length;
+  const rankScores=[{name:'아군',cnt:ours,color:'var(--green)'},...G.enemies.map((e,ei)=>({name:e.name,cnt:G.castles.filter(c=>c.owner===ei).length,color:e.color}))];
+  rankScores.sort((a,b)=>b.cnt-a.cnt);
+  const win=rankScores[0].name==='아군';
+  const finalScore = calcFinalScore(ours, totalTurn());
+  if(win)showEvent('천하통일!','🏆 승리','아군이 천하를 제패했습니다','gold');
+  else showEvent('전쟁 종료','💀 패배','성이 부족했습니다','red');
+  setTimeout(()=>{
+    showModal(`<div class="war-result">
+      <div class="big ${win?'win':''}">${win?'🏆 천하통일!':'💀 패배...'}</div>
+      <p>9일간의 전쟁 결과</p>
+      <div style="background:#050a05;padding:9px;border-radius:3px;font-size:.76rem;margin-bottom:8px;border:1px solid var(--border)">
+        ${rankScores.map((s,i)=>`<div style="display:flex;justify-content:space-between;padding:2px 0;${i===0?'color:var(--gold);font-weight:700':'color:var(--text2)'}"><span>${i+1}위 <span style="color:${s.color}">${s.name}</span></span><span>${s.cnt}개</span></div>`).join('')}
+      </div>
+      <p style="font-size:.72rem">명성:${G.fame} | API:${G.gold} | 무기:${WLEVS[G.weaponLv].name}</p>
+      <p style="font-size:.85rem;color:var(--gold);font-weight:700;margin-top:6px">최종 점수: ${finalScore.toLocaleString()}</p>
+    </div>`,[{label:'🏆 점수 등록',fn:()=>{closeModal();showNameInput(finalScore,ours,totalTurn());}},{label:'다시 시작',fn:()=>location.reload()}]);
+  },2400);
+}
+
+function checkGameOver(){
+  if(G.over)return;
+  let reason='',detail='';
+  if(G.food<=0){reason='아사(餓死)';detail=`식량이 바닥났습니다. ${G.day}일차 ${PHASES[G.phaseIdx]}`;}
+  else if(G.troop<=0){reason='전멸';detail=`병력이 전멸했습니다. ${G.day}일차 ${PHASES[G.phaseIdx]}`;}
+  else if(ourCastles().length===0){reason='거점 상실';detail=`아군 성이 모두 함락됐습니다. ${G.day}일차 ${PHASES[G.phaseIdx]}`;}
+  if(!reason)return;
+  G.over=true;
+  const ours=ourCastles().length;
+  const finalScore = calcFinalScore(ours, totalTurn());
+  showEvent('게임 오버','💀 '+reason,detail,'red');
+  setTimeout(()=>{
+    showModal(`<div class="war-result">
+      <div class="big">💀 ${reason}</div>
+      <p>${detail}</p>
+      <p style="font-size:.72rem">${totalTurn()}/36턴 생존 | 아군 성: ${ours}개</p>
+      <p style="font-size:.85rem;color:var(--gold);font-weight:700;margin-top:6px">최종 점수: ${finalScore.toLocaleString()}</p>
+    </div>`,[{label:'🏆 점수 등록',fn:()=>{closeModal();showNameInput(finalScore,ours,totalTurn());}},{label:'다시 시작',fn:()=>location.reload()}]);
+  },2400);
+}
+
+// ===== RENDER =====
+function renderAll(){renderTime();renderRes();renderTeam();renderEnemies();renderCastleMap();renderActions();}
+
+function renderTime(){
+  document.getElementById('day-display').textContent=Math.min(G.day,9);
+  document.getElementById('phase-display').textContent=G.day>9?'종료':PHASES[G.phaseIdx];
+  document.getElementById('turn-display').textContent=Math.min(totalTurn(),36);
+  document.getElementById('ally-display').textContent=G.allies.length?G.allies.join(', '):'없음';
+  document.getElementById('our-castle-count').textContent=ourCastles().length;
+  document.getElementById('action-count').textContent=G.actionsLeft;
+  document.getElementById('day-prog').innerHTML=PHASES.map((_,i)=>`<div class="tp ${i<G.phaseIdx?'done':i===G.phaseIdx?'cur':''}"></div>`).join('');
+  const wmd=document.getElementById('wall-mul-display');
+  if(wmd)wmd.textContent=`× ${DIFF.wallMul} (${DIFF.label})`;
+}
+
+function renderRes(){
+  const fl=G.food<DIFF.foodWarn,gl=G.gold<70,tl=G.troop<40;
+  document.getElementById('resource-display').innerHTML=`
+    <div class="res-item"><span>💰 API</span><span class="res-val ${gl?'low':''}">${G.gold}</span></div>
+    <div class="res-item"><span>🌾 식량</span><span class="res-val ${fl?'low':''}">${G.food}</span></div>
+    <div class="res-item"><span>⚔ 병력</span><span class="res-val ${tl?'low':''}">${G.troop}</span></div>
+    <div class="res-item"><span>⭐ 명성</span><span class="res-val">${G.fame}</span></div>`;
+  document.getElementById('wlv-display').textContent=WLEVS[G.weaponLv].name;
+  document.getElementById('alv-display').textContent=ALEVS[G.armorLv].name+` (${Math.floor(defRate()*100)}%)`;
+  const rc=v=>v>=70?'var(--green)':v>=40?'#ffaa00':'var(--red)';
+  const nwr=G.weaponLv<WLEVS.length-1?WLEVS[G.weaponLv+1].rate:0;
+  const nar=G.armorLv<ALEVS.length-1?ALEVS[G.armorLv+1].rate:0;
+  document.getElementById('wpips').innerHTML=WLEVS.slice(0,-1).map((_,i)=>`<div class="pip ${i<G.weaponLv?'w':''}"></div>`).join('')+(G.weaponLv<WLEVS.length-1?`<span style="font-size:.53rem;color:${rc(nwr)};margin-left:2px">${nwr}%</span>`:'<span style="font-size:.53rem;color:var(--gold);margin-left:2px">MAX</span>');
+  document.getElementById('apips').innerHTML=ALEVS.slice(0,-1).map((_,i)=>`<div class="pip ${i<G.armorLv?'a':''}"></div>`).join('')+(G.armorLv<ALEVS.length-1?`<span style="font-size:.53rem;color:${rc(nar)};margin-left:2px">${nar}%</span>`:'<span style="font-size:.53rem;color:var(--blue);margin-left:2px">MAX</span>');
+}
+
+function renderTeam(){
+  document.getElementById('team-display').innerHTML=G.members.map((m,i)=>`
+    <div class="mmini ${m.hidden?'hid':''} ${m.sleeping?'zzz':''}" onclick="showMember(${i})">
+      <span class="mn">${m.name}${m.hidden?' ★':''}</span>
+      <span class="ms">무${m.mu} 돌${m.dol}</span>
+    </div>`).join('');
+}
+
+function renderEnemies(){
+  document.getElementById('enemies-display').innerHTML=G.enemies.map((e,ei)=>{
+    const cnt=G.castles.filter(c=>c.owner===ei).length;
+    return `<div class="erow"><span style="color:${e.color};font-weight:500">${e.alive?'🔴':'💀'} ${e.name}</span><span style="color:var(--text2);font-size:.62rem">성${cnt}개${G.allies.includes(e.name)?' [동맹]':''}</span></div>`;
+  }).join('');
+}
+
+function renderCastleMap(){
+  const map=document.getElementById('castle-map');
+
+  // 30개 성의 지도 좌표 (x%, y%) - 삼국지 중원 지형 느낌
+  const CASTLE_POS=[
+    // 아군 5개 - 중앙 핵심
+    {x:42,y:30},{x:28,y:22},{x:55,y:22},{x:38,y:42},{x:64,y:35},
+    // 버컴퍼니 5개 - 북방
+    {x:18,y:10},{x:35,y:8},{x:52,y:10},{x:68,y:12},{x:80,y:18},
+    // 버인협회 5개 - 동쪽
+    {x:78,y:28},{x:86,y:38},{x:82,y:50},{x:74,y:58},{x:68,y:48},
+    // 지력사무소 5개 - 남쪽
+    {x:55,y:68},{x:42,y:72},{x:30,y:65},{x:18,y:58},{x:25,y:75},
+    // 꾸한성 5개 - 서쪽
+    {x:8,y:30},{x:12,y:44},{x:6,y:55},{x:16,y:68},{x:22,y:48},
+    // 홍피스 5개 - 서북
+    {x:8,y:18},{x:20,y:28},{x:30,y:38},{x:14,y:38},{x:28,y:52},
+  ];
+
+  // SVG 지도 생성
+  const W=560, H=320;
+
+  // 소유자별 색상
+  function getOwnerColor(castle){
+    if(castle.owner==='player') return {fill:'#5aaa2a',stroke:'#2a7a0a',text:'#fff'};
+    const ei=castle.owner;
+    if(typeof ei==='number') return {fill:G.enemies[ei].color,stroke:G.enemies[ei].color,text:'#fff'};
+    return {fill:'#aaa',stroke:'#888',text:'#444'};
+  }
+
+  let svg=`<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="width:100%;border-radius:4px;display:block">
+  <defs>
+    <filter id="shadow"><feDropShadow dx="1" dy="2" stdDeviation="2" flood-opacity=".35"/></filter>
+    <filter id="glow"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <radialGradient id="bgGrad" cx="50%" cy="50%" r="70%">
+      <stop offset="0%" stop-color="#e8d9b0"/>
+      <stop offset="100%" stop-color="#c8b880"/>
+    </radialGradient>
+    <radialGradient id="seaGrad" cx="50%" cy="50%" r="60%">
+      <stop offset="0%" stop-color="#9bbfd4"/>
+      <stop offset="100%" stop-color="#7aa0bc"/>
+    </radialGradient>
+  </defs>
+
+  <!-- 바다 배경 -->
+  <rect width="${W}" height="${H}" fill="url(#seaGrad)" rx="4"/>
+
+  <!-- 바다 물결 -->
+  <path d="M0,${H*0.72} Q${W*0.15},${H*0.68} ${W*0.3},${H*0.72} Q${W*0.45},${H*0.76} ${W*0.6},${H*0.72} Q${W*0.75},${H*0.68} ${W},${H*0.72} L${W},${H} L0,${H}Z" fill="#7aa0bc" opacity=".5"/>
+
+  <!-- 대륙 메인 (중원) -->
+  <path d="M${W*.05},${H*.05} C${W*.1},${H*.02} ${W*.5},${H*.0} ${W*.85},${H*.06}
+           C${W*.95},${H*.1} ${W*.98},${H*.25} ${W*.96},${H*.45}
+           C${W*.94},${H*.6} ${W*.85},${H*.72} ${W*.7},${H*.76}
+           C${W*.55},${H*.8} ${W*.4},${H*.82} ${W*.25},${H*.78}
+           C${W*.12},${H*.74} ${W*.03},${H*.62} ${W*.02},${H*.48}
+           C${W*.01},${H*.3} ${W*.02},${H*.1} ${W*.05},${H*.05}Z"
+    fill="url(#bgGrad)" stroke="#b8a860" stroke-width="1.5"/>
+
+  <!-- 산맥 표시 (북쪽) -->
+  <path d="M${W*.1},${H*.18} L${W*.15},${H*.10} L${W*.2},${H*.18} M${W*.22},${H*.15} L${W*.27},${H*.07} L${W*.32},${H*.15} M${W*.34},${H*.13} L${W*.39},${H*.05} L${W*.44},${H*.13}" stroke="#a09050" stroke-width="1.2" fill="none" opacity=".6"/>
+  <path d="M${W*.55},${H*.12} L${W*.6},${H*.05} L${W*.65},${H*.12} M${W*.67},${H*.10} L${W*.72},${H*.04} L${W*.77},${H*.10}" stroke="#a09050" stroke-width="1.2" fill="none" opacity=".6"/>
+
+  <!-- 강 (황하 느낌) -->
+  <path d="M${W*.08},${H*.35} C${W*.2},${H*.3} ${W*.35},${H*.32} ${W*.5},${H*.28} C${W*.62},${H*.25} ${W*.72},${H*.3} ${W*.82},${H*.38}" stroke="#7ab0d0" stroke-width="2" fill="none" opacity=".7" stroke-linecap="round"/>
+  <!-- 강 2 (장강 느낌) -->
+  <path d="M${W*.05},${H*.55} C${W*.18},${H*.52} ${W*.32},${H*.56} ${W*.48},${H*.53} C${W*.6},${H*.5} ${W*.72},${H*.55} ${W*.85},${H*.52}" stroke="#7ab0d0" stroke-width="1.5" fill="none" opacity=".6" stroke-linecap="round"/>
+
+  <!-- 지역명 -->
+  <text x="${W*.5}" y="${H*.42}" text-anchor="middle" fill="#8a7040" font-size="11" font-family="Noto Serif KR,serif" opacity=".4" font-weight="700">중 원</text>
+  <text x="${W*.12}" y="${H*.5}" text-anchor="middle" fill="#8a7040" font-size="9" font-family="Noto Serif KR,serif" opacity=".35">서역</text>
+  <text x="${W*.82}" y="${H*.45}" text-anchor="middle" fill="#8a7040" font-size="9" font-family="Noto Serif KR,serif" opacity=".35">동해</text>
+  <text x="${W*.45}" y="${H*.78}" text-anchor="middle" fill="#8a7040" font-size="9" font-family="Noto Serif KR,serif" opacity=".35">남방</text>
+  `;
+
+  // 성 연결선 (인접 성끼리)
+  const connections=[[0,1],[0,2],[0,3],[1,5],[2,6],[3,4],[5,6],[6,7],[7,8],[8,9],[9,14],[10,11],[11,12],[12,13],[13,18],[14,19],[15,16],[16,17],[17,22],[18,23],[19,24],[20,21],[21,22],[22,23],[25,26],[26,27],[27,28],[28,29],[24,29]];
+  connections.forEach(([a,b])=>{
+    const pa=CASTLE_POS[a], pb=CASTLE_POS[b];
+    if(!pa||!pb) return;
+    const ax=pa.x/100*W, ay=pa.y/100*H, bx=pb.x/100*W, by=pb.y/100*H;
+    svg+=`<line x1="${ax}" y1="${ay}" x2="${bx}" y2="${by}" stroke="#c4a96a" stroke-width=".8" opacity=".4" stroke-dasharray="3,3"/>`;
+  });
+
+  // 성 마커
+  G.castles.forEach((castle,i)=>{
+    const pos=CASTLE_POS[i];
+    if(!pos) return;
+    const cx=pos.x/100*W, cy=pos.y/100*H;
+    const col=getOwnerColor(castle);
+    const isPlayer=castle.owner==='player';
+    const r=isPlayer?14:12;
+
+    // 글로우 (아군)
+    if(isPlayer) svg+=`<circle cx="${cx}" cy="${cy}" r="${r+5}" fill="${col.fill}" opacity=".25"/>`;
+
+    // 성 원
+    svg+=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="${col.fill}" stroke="${col.stroke}" stroke-width="${isPlayer?2:1.5}" filter="url(#shadow)" opacity="${isPlayer?1:.92}"/>`;
+
+    // 아이콘
+    svg+=`<text x="${cx}" y="${cy-1}" text-anchor="middle" dominant-baseline="middle" font-size="${isPlayer?11:9}" style="cursor:pointer">${isPlayer?'🏯':'🏰'}</text>`;
+
+    // 성 이름 배경
+    const nameW=castle.name.length*9+6;
+    svg+=`<rect x="${cx-nameW/2}" y="${cy+r+1}" width="${nameW}" height="13" rx="2" fill="${col.fill}" opacity=".88"/>`;
+    svg+=`<text x="${cx}" y="${cy+r+10}" text-anchor="middle" fill="${col.text}" font-size="8.5" font-weight="700" font-family="Noto Sans KR,sans-serif">${castle.name}</text>`;
+
+    // 클릭 영역
+    svg+=`<circle cx="${cx}" cy="${cy}" r="${r+8}" fill="transparent" style="cursor:pointer" onclick="showCastle(${castle.id})" title="${castle.name}"/>`;
+  });
+
+  svg+='</svg>';
+
+  // 범례
+  let legend=`<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:6px;font-size:.65rem;align-items:center;padding:0 2px">
+    <span style="color:#2a6e2a;font-weight:700">🏯 아군 ${ourCastles().length}개</span>`;
+  G.enemies.forEach((e,ei)=>{
+    const cnt=G.castles.filter(ca=>ca.owner===ei).length;
+    legend+=`<span style="color:${e.color};font-weight:${cnt>0?700:400};opacity:${cnt>0?1:.4}">● ${e.name} ${cnt}개</span>`;
+  });
+  legend+='</div>';
+
+  map.innerHTML=svg+legend;
+}
+
+function renderActions(){
+  const dis=G.actionsLeft<=0||G.over;
+  document.getElementById('action-title-display').textContent=`▶ 행동 선택 (${G.actionsLeft}회 남음)`;
+  const nW=G.weaponLv<WLEVS.length-1?WLEVS[G.weaponLv+1]:null;
+  const nA=G.armorLv<ALEVS.length-1?ALEVS[G.armorLv+1]:null;
+  const acts=[
+    {l:'🏋 훈련',     d:'지력/무공↑',       c:'식량80',    f:'actionTrain()'},
+    {l:'💰 수집',     d:'API+식량',          c:'병력15',    f:'actionGather()'},
+    {l:'🪖 보충',     d:'병력 증강',         c:`API${DIFF.recruitCost}`, f:'actionRecruit()',hl:G.troop<50},
+    {l:'⚔ 무기강화', d:nW?nW.rate+'%':'MAX', c:nW?nW.cost+'G':'완료',   f:'actionWeapon()'},
+    {l:'🛡 갑옷강화', d:nA?nA.rate+'%':'MAX', c:nA?nA.cost+'G':'완료',   f:'actionArmor()'},
+    {l:'😴 수면관리', d:'돌발/지각↓',        c:'없음',      f:'actionSleep()'},
+    {l:'⭐ 명성',     d:'명성 이벤트',       c:'API50',     f:'actionFame()'},
+    {l:'🤝 외교',     d:'동맹 체결',         c:'명성40',    f:'actionDiplo()'},
+    {l:'🏯 성 공격',  d:'적 성 점령',        c:'병력50↑',  f:'actionAttack()',hl:true},
+    {l:'🛡 성 방어',  d:'수비 강화',         c:'API60',     f:'actionDefend()'},
+    {l:'👊 팀 드잡이',d:'돌발 랜덤변화',     c:'없음',      f:'actionFight()'},
+    {l:'🫂 팀 위로',  d:'수면/돌발↓',        c:'없음',      f:'actionCheers()'},
+  ];
+  document.getElementById('action-grid').innerHTML=acts.map(a=>`
+    <button class="ab ${a.hl?'hl':''}" ${dis?'disabled':''} onclick="${a.f}">
+      ${a.l}<br><small style="color:var(--faded)">${a.d}</small>
+      <span class="cost">${a.c}</span>
+    </button>`).join('');
+}
+
+function showMember(idx){
+  const m=G.members[idx];
+  showModal(`<h3>${m.name}${m.hidden?' ★ 히든':''}</h3>
+    <div class="sbar-row"><span class="sbar-lbl">지력</span><div class="sbar"><div class="sbar-fill" style="width:${m.ji}%;background:#4488cc"></div></div><span class="sbar-val">${m.ji}</span></div>
+    <div class="sbar-row"><span class="sbar-lbl">무공</span><div class="sbar"><div class="sbar-fill" style="width:${m.mu}%;background:#cc4444"></div></div><span class="sbar-val">${m.mu}</span></div>
+    <div class="sbar-row"><span class="sbar-lbl">수면</span><div class="sbar"><div class="sbar-fill" style="width:${m.su}%;background:${m.su>=65?'#cc8800':'var(--green)'}"></div></div><span class="sbar-val">${m.su}</span></div>
+    <div class="sbar-row"><span class="sbar-lbl">돌발</span><div class="sbar"><div class="sbar-fill" style="width:${m.dol}%;background:#aa44cc"></div></div><span class="sbar-val">${m.dol}</span></div>
+    <p>${m.sleeping?'💤 수면 중':m.dol>60?'⚠ 돌발 위험':m.su>=65?'⚠ 수면 불안정':'✅ 정상'}</p>
+    ${m.hidden?'<p style="color:var(--gold)">★ 전투력+25, 훈련 효율 2배</p>':''}
+  `,[{label:'닫기',fn:closeModal}]);
+}
+
+function showCastle(cid){
+  const c=G.castles[cid];
+  const own=c.owner==='player'?'아군':typeof c.owner==='number'?G.enemies[c.owner].name:'중립';
+  const isOurs=c.owner==='player';
+  showModal(`<h3>🏯 ${c.name}</h3>
+    <p>소유: <b style="color:${isOurs?'var(--green)':'var(--red)'}">${own}</b></p>
+    <p>수비 병력: <b style="color:var(--white)">${isOurs?c.troop:'???'}</b></p>
+    ${isOurs?`<p style="font-size:.7rem;color:var(--text2)">수성 전력 약 <b style="color:var(--gold)">${Math.floor(c.troop*DIFF.wallMul)}</b></p>`:''}
+    ${!isOurs?`<p style="font-size:.7rem;color:var(--text2)">'성 공격' 액션으로 공격 | 첩보로 정보 수집 가능</p>`:'<p style="font-size:.7rem;color:var(--text2)">"성 방어"로 수비 강화하세요</p>'}
+  `,[{label:'닫기',fn:closeModal}]);
+}
+
+function showUpgrade(title,curN,nxtN,curS,nxtS,rate,cost,gold,color,cb){
+  const rateColor=rate>=70?'#2a6e2a':rate>=40?'#996600':'#8b1a1a';
+  const rateBg=rate>=70?'#4a9a2a':rate>=40?'#cc8800':'#8b1a1a';
+  showModal(`<h3>${title}</h3>
+    <div style="background:var(--aged2);padding:10px;border-radius:3px;margin-bottom:8px;border:1px solid var(--border)">
+      <div style="display:flex;justify-content:space-between;align-items:center;font-size:.78rem;margin-bottom:5px;padding-bottom:5px;border-bottom:1px solid var(--border)">
+        <span style="color:var(--faded);min-width:32px">현재</span>
+        <b style="color:var(--ink)">${curN}</b>
+        <span style="color:var(--faded)">${curS}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;font-size:.78rem">
+        <span style="color:var(--red);min-width:32px">목표</span>
+        <b style="color:var(--ink)">${nxtN}</b>
+        <span style="color:var(--red)">${nxtS}</span>
+      </div>
+    </div>
+    <div style="background:var(--aged2);border:1px solid var(--border);border-radius:3px;padding:10px;margin-bottom:8px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px">
+        <span style="font-size:.78rem;color:var(--ink)">성공 확률</span>
+        <b style="font-size:1.1rem;color:${rateColor}">${rate}%</b>
+      </div>
+      <div style="height:12px;background:rgba(196,169,106,.25);border-radius:4px;overflow:hidden;border:1px solid var(--border)">
+        <div style="width:${rate}%;height:100%;background:${rateBg};border-radius:3px;transition:width .3s"></div>
+      </div>
+      <div style="font-size:.68rem;color:var(--faded);margin-top:5px">실패해도 레벨 유지, 골드만 소모</div>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:.82rem;padding:4px 0">
+      <span style="color:var(--ink)">비용</span>
+      <b style="color:var(--red)">${cost}G</b>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:.82rem;padding:4px 0">
+      <span style="color:var(--ink)">보유 API</span>
+      <b style="color:${gold>=cost?'#2a6e2a':'#8b1a1a'}">${gold}G</b>
+    </div>
+    ${gold<cost?'<div style="color:#8b1a1a;font-weight:700;font-size:.78rem;margin-top:6px;padding:5px 8px;background:#fff0f0;border-radius:2px;border:1px solid #cc9999">⚠ API가 부족합니다!</div>':''}
+  `,[{label:`강화 시도 (${cost}G)`,fn:()=>{if(gold<cost){closeModal();addLog('lw','API 부족!');return;}closeModal();cb();}},{label:'취소',fn:closeModal}]);
+}
+
+function showSelMember(title,cb){
+  window._smCb=cb;
+  showModal(`<h3>${title}</h3><div class="sel-list">${G.members.map((m,i)=>`
+    <div class="sel-item ${m.sleeping?'dis':''}" onclick="smCb(${i})">
+      <span style="color:${m.hidden?'var(--gold)':'var(--white)'}">${m.name}${m.hidden?' ★':''} ${m.sleeping?'(수면)':''}</span>
+      <span style="color:var(--text2);font-size:.62rem">지${m.ji} 무${m.mu} 돌${m.dol}</span>
+    </div>`).join('')}</div>`,[{label:'취소',fn:closeModal}]);
+}
+window.smCb=(i)=>{closeModal();window._smCb(i);}
+
+function showSelEnemy(title,tgts,cb){
+  window._seCb=cb;
+  showModal(`<h3>${title}</h3><div class="sel-list">${tgts.map(e=>`
+    <div class="sel-item" onclick="seCb('${e.name}')">
+      <span style="color:${e.color}">${e.name}</span>
+      <span style="color:var(--text2);font-size:.62rem">성${G.castles.filter(c=>c.owner===G.enemies.indexOf(e)).length}개</span>
+    </div>`).join('')}</div>`,[{label:'취소',fn:closeModal}]);
+}
+window.seCb=(n)=>{closeModal();window._seCb(n);}
+
+function showSelCastle(title,castles,cb){
+  window._scCb=cb;
+  showModal(`<h3>${title}</h3><div class="sel-list">${castles.map(c=>{
+    const own=c.owner==='player'?'아군':typeof c.owner==='number'?G.enemies[c.owner].name:'중립';
+    return `<div class="sel-item" onclick="scCb(${c.id})">
+      <span style="color:var(--white)">${c.name}</span>
+      <span style="color:var(--text2);font-size:.62rem">${own} ${c.owner==='player'?'병'+c.troop:'???'}</span>
+    </div>`;}).join('')}</div>`,[{label:'취소',fn:closeModal}]);
+}
+window.scCb=(id)=>{closeModal();window._scCb(id);}
+
+function showModal(html,btns){
+  window._mbtns=btns;
+  document.getElementById('modal-container').innerHTML=`
+    <div class="modal-bg" onclick="event.target===this&&closeModal()">
+      <div class="modal">${html}
+        <div class="modal-btns">${btns.map((b,i)=>`<button class="btn btn-sm ${i>0?'btn-gold':''}" onclick="window._mbtns[${i}].fn()">${b.label}</button>`).join('')}</div>
+      </div>
+    </div>`;
+}
+function closeModal(){document.getElementById('modal-container').innerHTML='';}
+
+initSetup();
+</script>
 </body>
 </html>

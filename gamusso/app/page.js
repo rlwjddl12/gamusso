@@ -5,7 +5,7 @@ const CREW = [
   {name:'가습기',role:'소장님',uid:'hwt1014',c:'#4a90d9'},
   {name:'새잎',role:'반장',uid:'likey0u',c:'#5bc4a0'},
   {name:'잼율이',role:null,uid:'jamyul2',c:'#e89fc0'},
-  {name:'기찬하',role:null,uid:'khj011219',c:'#a78bfa'},
+  {name:'기찬하',role:null,uid:'khj011219',c:'#a78bfa'}, 
   {name:'야뿌',role:null,uid:'ekrekrnfl9',c:'#7ec8e3'},
   {name:'하티하티',role:null,uid:'gkxl1004',c:'#f4a460'},
   {name:'딩굴',role:null,uid:'dinggoolx3',c:'#90ee90'},

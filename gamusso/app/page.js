@@ -107,23 +107,19 @@ export default function Home(){
               </a>
             ))}
           </div>
-
-              
         </div>
       )}
 
       {news.length > 0 && (
         <div className={styles.container}>
-          <div className={styles.newsHeader}>
-              
-          </div>
+          <div className={styles.secLabel}>📰 가무소식</div>
           <div className={styles.newsGrid}>
             {news.map((n, i) => (
               <div key={i} className={styles.newsCard}>
                 {n.img && <img src={n.img} alt={n.title} className={styles.newsImg} />}
                 <div className={styles.newsBody}>
                   <div className={styles.newsMeta}>
-                  <span className={styles.newsTag} data-tag={n.tag}>{n.tag}</span>
+                    <span className={styles.newsTag} data-tag={n.tag}>{n.tag}</span>
                     <span className={styles.newsDate}>{n.date}</span>
                   </div>
                   <div className={styles.newsTitle}>{n.title}</div>

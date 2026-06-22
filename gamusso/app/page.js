@@ -90,7 +90,7 @@ export default function Home(){
           <div className={styles.secLabel}>🔴 LIVE NOW · {liveMembers.length}명 방송중</div>
           <div className={styles.liveGrid}>
             {liveMembers.map(m => (
-              <a key={m.uid} href={stationUrl(m.uid)} target="_blank" rel="noopener" className={styles.liveCard}>
+              <a key={m.uid} href={liveUrl(m.uid)} target="_blank" rel="noopener" className={styles.liveCard}>
                 <div className={styles.liveThumbWrap}>
                   {liveData[m.uid]?.thumb
                     ? <img src={liveData[m.uid].thumb} alt={m.name} className={styles.liveThumb} />

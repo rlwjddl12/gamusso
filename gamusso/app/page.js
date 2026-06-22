@@ -110,9 +110,12 @@ export default function Home(){
         </div>
       )}
 
-      {news.length > 0 && (
-        <div className={styles.container}>
-          <div className={styles.secLabel}>📰 가무소식</div>
+{news.length > 0 && (
+  <div className={styles.container}>
+    <div className={styles.newsHeader}>
+      <div className={styles.secLabel}>📰 가무소식</div>
+      <div className={styles.updateLog}>🔧 v0.6.23 · 방송국 링크 수정, 뉴스 섹션 추가</div>
+    </div>
           <div className={styles.newsGrid}>
             {news.map((n, i) => (
               <div key={i} className={styles.newsCard}>

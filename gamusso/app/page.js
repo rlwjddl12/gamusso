@@ -53,7 +53,7 @@ function LiveCard({ m, thumb, title }) {
         {playing ? (
           <>
             <iframe
-              src={`https://play.sooplive.com/${m.uid}/embed?mute=${muted}`}
+              src={`https://play.sooplive.co.kr/${m.uid}/embed?autoPlay=true&showChat=false&mutePlay=${muted}`}
               className={styles.liveIframe}
               allow="autoplay; encrypted-media"
               allowFullScreen
@@ -130,58 +130,4 @@ export default function Home(){
 
   return (
     <main>
-      <div className={styles.hero}>
-        <img src="https://raw.githubusercontent.com/rlwjddl12/gamusso/main/gamusso/app/Banner.png" alt="가무소 크루" className={styles.heroBg} />
-        <div className={styles.heroOverlay} />
-      </div>
-
-      {liveMembers.length > 0 && (
-        <div className={styles.container}>
-          <div className={styles.secLabel}>🔴 LIVE NOW · {liveMembers.length}명 방송중</div>
-          <div className={styles.liveGrid}>
-            {liveMembers.map(m => (
-              <LiveCard key={m.uid} m={m} thumb={liveData[m.uid]?.thumb} title={liveData[m.uid]?.title} />
-            ))}
-          </div>
-        </div>
-      )}
-
-      {news.length > 0 && (
-        <div className={styles.container}>
-          <div className={styles.secLabel}>📰 가무소식</div>
-          <div className={styles.newsGrid}>
-            {news.map((n, i) => (
-              <div key={i} className={styles.newsCard}>
-                {n.img && <img src={n.img} alt={n.title} className={styles.newsImg} />}
-                <div className={styles.newsBody}>
-                  <div className={styles.newsMeta}>
-                    <span className={styles.newsTag}>{n.tag}</span>
-                    <span className={styles.newsDate}>{n.date}</span>
-                  </div>
-                  <div className={styles.newsTitle}>{n.title}</div>
-                  <div className={styles.newsDesc}>{n.desc}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      <div className={styles.container}>
-        <div className={styles.secLabel}>● 오프라인 멤버</div>
-        <div className={styles.cardGrid}>
-          {offMembers.map(m => <MemberCard key={m.uid} m={m} isLive={false} />)}
-        </div>
-      </div>
-
-      <div className={styles.container}>
-        <div className={styles.secLabel}>⚔ GAME</div>
-        <a href="/game.html" className={styles.gameBtn}>
-          ⚔ 삼국지 운영 연습 게임 · 천하쟁탈전
-        </a>
-      </div>
-
-      <footer className={styles.footer}>가무소 팬페이지 · 팬메이드 비공식 페이지</footer>
-    </main>
-  )
-}
+      <div

@@ -5,7 +5,7 @@ const CREW = [
   {name:'가습기',role:'소장님',uid:'hwt1014',c:'#4a90d9'},
   {name:'새잎',role:'반장',uid:'likey0u',c:'#5bc4a0'},
   {name:'잼율이',role:null,uid:'jamyul2',c:'#e89fc0'},
-  {name:'기찬하',role:null,uid:'khj011219',c:'#a78bfa'}, 
+  {name:'기찬하',role:null,uid:'khj011219',c:'#a78bfa'},
   {name:'야뿌',role:null,uid:'ekrekrnfl9',c:'#7ec8e3'},
   {name:'하티하티',role:null,uid:'gkxl1004',c:'#f4a460'},
   {name:'딩굴',role:null,uid:'dinggoolx3',c:'#90ee90'},
@@ -19,8 +19,7 @@ const CREW = [
   {name:'정다니',role:null,uid:'wjdekgus112',c:'#cd853f'},
 ]
 function profileImg(uid){return `https://stimg.sooplive.com/LOGO/${uid.substring(0,2)}/${uid}/${uid}.jpg`}
-function stationUrl(uid){return `https://www.sooplive.com/station/${uid}`}
-function liveUrl(uid){return `https://play.sooplive.com/${uid}`}
+function stationUrl(uid){return `https://play.sooplive.com/${uid}`}
 
 function MemberCard({ m, isLive }) {
   return (
@@ -41,6 +40,57 @@ function MemberCard({ m, isLive }) {
         {m.role && <div className={styles.cardRole}>{m.role}</div>}
       </div>
     </a>
+  )
+}
+
+function LiveCard({ m, thumb, title }) {
+  const [playing, setPlaying] = useState(false)
+  const [muted, setMuted] = useState(true)
+
+  return (
+    <div className={styles.liveCard}>
+      <div className={styles.liveThumbWrap} onClick={() => !playing && setPlaying(true)}>
+        {playing ? (
+          <>
+            <iframe
+              src={`https://play.sooplive.com/${m.uid}/embed?mute=${muted}`}
+              className={styles.liveIframe}
+              allow="autoplay; encrypted-media"
+              allowFullScreen
+            />
+            <div className={styles.liveControls}>
+              <button
+                className={styles.ctrlBtn}
+                onClick={(e) => { e.stopPropagation(); setMuted(!muted) }}
+              >
+                {muted ? '🔇' : '🔊'}
+              </button>
+              <button
+                className={styles.ctrlBtn}
+                onClick={(e) => { e.stopPropagation(); setPlaying(false) }}
+              >
+                ✕
+              </button>
+            </div>
+          </>
+        ) : (
+          <>
+            {thumb
+              ? <img src={thumb} alt={m.name} className={styles.liveThumb} />
+              : <div className={styles.liveThumbFallback}>📡</div>
+            }
+            <div className={styles.playOverlay}>▶</div>
+          </>
+        )}
+        <div className={styles.liveBadge}>● LIVE</div>
+      </div>
+      <div className={styles.liveInfo}>
+        <div>
+          <div className={styles.liveName}>{m.name}</div>
+          <div className={styles.liveTitle}>{title || ''}</div>
+        </div>
+      </div>
+    </div>
   )
 }
 
@@ -90,21 +140,7 @@ export default function Home(){
           <div className={styles.secLabel}>🔴 LIVE NOW · {liveMembers.length}명 방송중</div>
           <div className={styles.liveGrid}>
             {liveMembers.map(m => (
-              <a key={m.uid} href={liveUrl(m.uid)} target="_blank" rel="noopener" className={styles.liveCard}>
-                <div className={styles.liveThumbWrap}>
-                  {liveData[m.uid]?.thumb
-                    ? <img src={liveData[m.uid].thumb} alt={m.name} className={styles.liveThumb} />
-                    : <div className={styles.liveThumbFallback}>📡</div>
-                  }
-                  <div className={styles.liveBadge}>● LIVE</div>
-                </div>
-                <div className={styles.liveInfo}>
-                  <div>
-                    <div className={styles.liveName}>{m.name}</div>
-                    <div className={styles.liveTitle}>{liveData[m.uid]?.title || ''}</div>
-                  </div>
-                </div>
-              </a>
+              <LiveCard key={m.uid} m={m} thumb={liveData[m.uid]?.thumb} title={liveData[m.uid]?.title} />
             ))}
           </div>
         </div>
@@ -119,7 +155,7 @@ export default function Home(){
                 {n.img && <img src={n.img} alt={n.title} className={styles.newsImg} />}
                 <div className={styles.newsBody}>
                   <div className={styles.newsMeta}>
-                    <span className={styles.newsTag} data-tag={n.tag}>{n.tag}</span>
+                    <span className={styles.newsTag}>{n.tag}</span>
                     <span className={styles.newsDate}>{n.date}</span>
                   </div>
                   <div className={styles.newsTitle}>{n.title}</div>

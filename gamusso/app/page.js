@@ -43,49 +43,20 @@ function MemberCard({ m, isLive }) {
   )
 }
 
-function LiveCard({ m, thumb, title, broadNo }) {
-  const [playing, setPlaying] = useState(false)
-  const [muted, setMuted] = useState(true)
-
+function LiveCard({ m, thumb, title }) {
   return (
-    <div className={styles.liveCard}>
-      <div className={styles.liveThumbWrap} onClick={() => !playing && setPlaying(true)}>
-        {playing ? (
-          <>
-            {broadNo ? (
-              <iframe
-                src={`https://play.sooplive.co.kr/${m.uid}/${broadNo}/embed?autoPlay=true&showChat=false&mutePlay=${muted}`}
-                className={styles.liveIframe}
-                allow="autoplay; encrypted-media"
-                allowFullScreen
-              />
-            ) : (
-              <div className={styles.liveThumbFallback}>방송번호를 찾을 수 없어요</div>
-            )}
-            <div className={styles.liveControls}>
-              <button
-                className={styles.ctrlBtn}
-                onClick={(e) => { e.stopPropagation(); setMuted(!muted) }}
-              >
-                {muted ? '🔇' : '🔊'}
-              </button>
-              <button
-                className={styles.ctrlBtn}
-                onClick={(e) => { e.stopPropagation(); setPlaying(false) }}
-              >
-                ✕
-              </button>
-            </div>
-          </>
-        ) : (
-          <>
-            {thumb
-              ? <img src={thumb} alt={m.name} className={styles.liveThumb} />
-              : <div className={styles.liveThumbFallback}>📡</div>
-            }
-            <div className={styles.playOverlay}>▶</div>
-          </>
-        )}
+    
+      href={stationUrl(m.uid)}
+      target="_blank"
+      rel="noopener"
+      className={styles.liveCard}
+    >
+      <div className={styles.liveThumbWrap}>
+        {thumb
+          ? <img src={thumb} alt={m.name} className={styles.liveThumb} />
+          : <div className={styles.liveThumbFallback}>📡</div>
+        }
+        <div className={styles.playOverlay}>▶</div>
         <div className={styles.liveBadge}>● LIVE</div>
       </div>
       <div className={styles.liveInfo}>
@@ -94,7 +65,7 @@ function LiveCard({ m, thumb, title, broadNo }) {
           <div className={styles.liveTitle}>{title || ''}</div>
         </div>
       </div>
-    </div>
+    </a>
   )
 }
 
@@ -144,13 +115,7 @@ export default function Home(){
           <div className={styles.secLabel}>🔴 LIVE NOW · {liveMembers.length}명 방송중</div>
           <div className={styles.liveGrid}>
             {liveMembers.map(m => (
-              <LiveCard
-                key={m.uid}
-                m={m}
-                thumb={liveData[m.uid]?.thumb}
-                title={liveData[m.uid]?.title}
-                broadNo={liveData[m.uid]?.broadNo}
-              />
+              <LiveCard key={m.uid} m={m} thumb={liveData[m.uid]?.thumb} title={liveData[m.uid]?.title} />
             ))}
           </div>
         </div>

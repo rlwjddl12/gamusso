@@ -284,12 +284,6 @@
   background: #ff4444;
   color: #fff;
 }
-.newsTag[data-tag="업데이트"] {
-  background: #4a90d9;
-}
-.newsTag[data-tag="이벤트"] {
-  background: #5bc4a0;
-}
 .newsDate {
   font-size: 11px;
   color: #666;

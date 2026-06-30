@@ -43,6 +43,57 @@ function MemberCard({ m, isLive }) {
   )
 }
 
+function LiveCard({ m, thumb, title }) {
+  const [playing, setPlaying] = useState(false)
+  const [muted, setMuted] = useState(true)
+
+  return (
+    <div className={styles.liveCard}>
+      <div className={styles.liveThumbWrap} onClick={() => !playing && setPlaying(true)}>
+        {playing ? (
+          <>
+            <iframe
+              src={`https://play.sooplive.com/${m.uid}/embed?mute=${muted}`}
+              className={styles.liveIframe}
+              allow="autoplay; encrypted-media"
+              allowFullScreen
+            />
+            <div className={styles.liveControls}>
+              <button
+                className={styles.ctrlBtn}
+                onClick={(e) => { e.stopPropagation(); setMuted(!muted) }}
+              >
+                {muted ? '🔇' : '🔊'}
+              </button>
+              <button
+                className={styles.ctrlBtn}
+                onClick={(e) => { e.stopPropagation(); setPlaying(false) }}
+              >
+                ✕
+              </button>
+            </div>
+          </>
+        ) : (
+          <>
+            {thumb
+              ? <img src={thumb} alt={m.name} className={styles.liveThumb} />
+              : <div className={styles.liveThumbFallback}>📡</div>
+            }
+            <div className={styles.playOverlay}>▶</div>
+          </>
+        )}
+        <div className={styles.liveBadge}>● LIVE</div>
+      </div>
+      <div className={styles.liveInfo}>
+        <div>
+          <div className={styles.liveName}>{m.name}</div>
+          <div className={styles.liveTitle}>{title || ''}</div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function Home(){
   const [liveData, setLiveData] = useState({})
   const [news, setNews] = useState([])
@@ -89,21 +140,7 @@ export default function Home(){
           <div className={styles.secLabel}>🔴 LIVE NOW · {liveMembers.length}명 방송중</div>
           <div className={styles.liveGrid}>
             {liveMembers.map(m => (
-              <a key={m.uid} href={stationUrl(m.uid)} target="_blank" rel="noopener" className={styles.liveCard}>
-                <div className={styles.liveThumbWrap}>
-                  {liveData[m.uid]?.thumb
-                    ? <img src={liveData[m.uid].thumb} alt={m.name} className={styles.liveThumb} />
-                    : <div className={styles.liveThumbFallback}>📡</div>
-                  }
-                  <div className={styles.liveBadge}>● LIVE</div>
-                </div>
-                <div className={styles.liveInfo}>
-                  <div>
-                    <div className={styles.liveName}>{m.name}</div>
-                    <div className={styles.liveTitle}>{liveData[m.uid]?.title || ''}</div>
-                  </div>
-                </div>
-              </a>
+              <LiveCard key={m.uid} m={m} thumb={liveData[m.uid]?.thumb} title={liveData[m.uid]?.title} />
             ))}
           </div>
         </div>

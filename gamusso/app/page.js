@@ -43,32 +43,6 @@ function MemberCard({ m, isLive }) {
   )
 }
 
-function LiveCard({ m, thumb, title }) {
-  return (
-    
-      href={stationUrl(m.uid)}
-      target="_blank"
-      rel="noopener"
-      className={styles.liveCard}
-    >
-      <div className={styles.liveThumbWrap}>
-        {thumb
-          ? <img src={thumb} alt={m.name} className={styles.liveThumb} />
-          : <div className={styles.liveThumbFallback}>📡</div>
-        }
-        <div className={styles.playOverlay}>▶</div>
-        <div className={styles.liveBadge}>● LIVE</div>
-      </div>
-      <div className={styles.liveInfo}>
-        <div>
-          <div className={styles.liveName}>{m.name}</div>
-          <div className={styles.liveTitle}>{title || ''}</div>
-        </div>
-      </div>
-    </a>
-  )
-}
-
 export default function Home(){
   const [liveData, setLiveData] = useState({})
   const [news, setNews] = useState([])
@@ -115,7 +89,21 @@ export default function Home(){
           <div className={styles.secLabel}>🔴 LIVE NOW · {liveMembers.length}명 방송중</div>
           <div className={styles.liveGrid}>
             {liveMembers.map(m => (
-              <LiveCard key={m.uid} m={m} thumb={liveData[m.uid]?.thumb} title={liveData[m.uid]?.title} />
+              <a key={m.uid} href={stationUrl(m.uid)} target="_blank" rel="noopener" className={styles.liveCard}>
+                <div className={styles.liveThumbWrap}>
+                  {liveData[m.uid]?.thumb
+                    ? <img src={liveData[m.uid].thumb} alt={m.name} className={styles.liveThumb} />
+                    : <div className={styles.liveThumbFallback}>📡</div>
+                  }
+                  <div className={styles.liveBadge}>● LIVE</div>
+                </div>
+                <div className={styles.liveInfo}>
+                  <div>
+                    <div className={styles.liveName}>{m.name}</div>
+                    <div className={styles.liveTitle}>{liveData[m.uid]?.title || ''}</div>
+                  </div>
+                </div>
+              </a>
             ))}
           </div>
         </div>

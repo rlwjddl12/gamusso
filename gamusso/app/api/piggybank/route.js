@@ -1,4 +1,4 @@
-        // app/api/piggybank/route.js
+// app/api/piggybank/route.js
 import { NextResponse } from 'next/server'
 
 const CREW_UIDS = [
@@ -6,6 +6,9 @@ const CREW_UIDS = [
   'toocats', 'tndk321', 'ddr9463', '200501', 'yeonchimin',
   'odoeun', 'wjdekgus112', 'fbcogk', '33h2101', '59590423',
 ]
+
+// 제목에 "삼국지"가 없어도 예외적으로 보여줄 uid 목록 (예: 딩굴)
+const TITLE_FILTER_EXEMPT_UIDS = ['dinggoolx3']
 
 async function fetchChallengeFunding(uid, debug) {
   const body = new URLSearchParams()
@@ -37,7 +40,11 @@ async function fetchChallengeFunding(uid, debug) {
     if (!json || json.result !== 1 || !Array.isArray(json.data)) return []
 
     return json.data
-      .filter(m => m.status === 'PROGRESS' && (m.title || '').includes('삼국지'))
+      .filter(m => {
+        if (m.status !== 'PROGRESS') return false
+        if (TITLE_FILTER_EXEMPT_UIDS.includes(m.bj_id)) return true
+        return (m.title || '').includes('삼국지')
+      })
       .map(m => ({
         uid: m.bj_id,
         title: m.title,

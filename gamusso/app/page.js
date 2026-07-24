@@ -70,53 +70,17 @@ function LiveCard({ m, thumb, title }) {
   )
 }
 
-function useCountdown(deadline) {
-  const [left, setLeft] = useState(null)
-  useEffect(() => {
-    if (!deadline) return
-    const target = new Date(deadline).getTime()
-    const tick = () => {
-      const diff = target - Date.now()
-      if (diff <= 0) { setLeft({ d:0, h:0, m:0, s:0, done:true }); return }
-      const d = Math.floor(diff / 86400000)
-      const h = Math.floor((diff % 86400000) / 3600000)
-      const m = Math.floor((diff % 3600000) / 60000)
-      const s = Math.floor((diff % 60000) / 1000)
-      setLeft({ d, h, m, s, done:false })
-    }
-    tick()
-    const t = setInterval(tick, 1000)
-    return () => clearInterval(t)
-  }, [deadline])
-  return left
-}
-
-function PiggyBankCard({ entry }) {
+function PiggyBankRow({ entry }) {
   const member = CREW.find(m => m.uid === entry.uid)
-  const left = useCountdown(entry.deadline)
-  const pct = entry.goal ? Math.min(100, Math.floor((entry.amount / entry.goal) * 100)) : null
-
   return (
-    <div className={styles.piggyCard} style={{'--card-color': member?.c || '#4a90d9'}}>
-      <div className={styles.piggyHeader}>
-        <span className={styles.piggyName}>{member?.name || entry.uid}</span>
-        <span className={styles.piggyStatus}>{left?.done ? '종료' : '진행'}</span>
-      </div>
-      <div className={styles.piggyTitle}>{entry.title || '삼국지 저금통'}</div>
-      <div className={styles.piggyAmount}>
-        상금: {entry.amount?.toLocaleString()}개
-        {entry.goal ? ` / ${entry.goal.toLocaleString()}개` : ''}
-      </div>
-      {pct !== null && (
-        <div className={styles.piggyBarTrack}>
-          <div className={styles.piggyBarFill} style={{ width: `${pct}%` }} />
-        </div>
-      )}
-      {left && !left.done && (
-        <div className={styles.piggyTimer}>
-          {left.d}일 {left.h}시간 {left.m}분 {left.s}초
-        </div>
-      )}
+    <div className={styles.piggyRow}>
+      <span className={styles.piggyRowName} style={{ color: member?.c || '#4a90d9' }}>
+        {member?.name || entry.uid}
+      </span>
+      <span className={styles.piggyRowDash}>-</span>
+      <span className={styles.piggyRowAmount}>
+        삼국지 {entry.amount?.toLocaleString()}개
+      </span>
     </div>
   )
 }
@@ -155,13 +119,13 @@ export default function Home(){
 
   useEffect(() => {
     const loadPiggy = () => {
-      fetch(`/piggybank.json?t=${Date.now()}`)
+      fetch(`/api/piggybank?t=${Date.now()}`)
         .then(r => r.json())
         .then(setPiggyBanks)
         .catch(() => {})
     }
     loadPiggy()
-    const t = setInterval(loadPiggy, 30 * 1000)
+    const t = setInterval(loadPiggy, 60 * 1000)
     return () => clearInterval(t)
   }, [])
 
@@ -191,9 +155,9 @@ export default function Home(){
       {piggyBanks.length > 0 && (
         <div className={styles.container}>
           <div className={styles.secLabel}>🐷 삼국지 저금통</div>
-          <div className={styles.piggyGrid}>
+          <div className={styles.piggyList}>
             {piggyBanks.map((entry, i) => (
-              <PiggyBankCard key={entry.uid + i} entry={entry} />
+              <PiggyBankRow key={entry.uid + i} entry={entry} />
             ))}
           </div>
         </div>

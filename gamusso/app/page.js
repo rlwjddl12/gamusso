@@ -20,6 +20,7 @@ const CREW = [
 ]
 function profileImg(uid){return `https://stimg.sooplive.com/LOGO/${uid.substring(0,2)}/${uid}/${uid}.jpg`}
 function stationUrl(uid){return `https://www.sooplive.com/station/${uid}`}
+function liveUrl(uid){return `https://play.sooplive.com/${uid}`}
 
 function MemberCard({ m, isLive }) {
   return (
@@ -46,7 +47,7 @@ function MemberCard({ m, isLive }) {
 function LiveCard({ m, thumb, title }) {
   return (
     <a
-      href={stationUrl(m.uid)}
+      href={liveUrl(m.uid)}
       target="_blank"
       rel="noopener"
       className={styles.liveCard}

@@ -315,4 +315,26 @@
   .cardName {
     font-size: 13px;
   }
+}.piggyList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.piggyRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: #1a1a1a;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+.piggyRowName {
+  font-weight: 700;
+}
+.piggyRowDash {
+  color: #666;
+}
+.piggyRowAmount {
+  color: #eee;
 }

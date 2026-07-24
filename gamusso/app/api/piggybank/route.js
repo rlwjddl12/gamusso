@@ -67,7 +67,18 @@ export async function GET(request) {
   }
 
   const results = await Promise.all(CREW_UIDS.map(uid => fetchChallengeFunding(uid, false)))
-  const entries = results.flat().sort((a, b) => b.amount - a.amount)
+  const flat = results.flat()
+
+  // 같은 사람이 미션을 여러 개 진행중이면 금액을 합쳐서 한 줄로 표시
+  const merged = {}
+  for (const e of flat) {
+    if (!merged[e.uid]) {
+      merged[e.uid] = { uid: e.uid, title: e.title, amount: 0 }
+    }
+    merged[e.uid].amount += e.amount
+  }
+  const entries = Object.values(merged).sort((a, b) => b.amount - a.amount)
+
   return NextResponse.json(entries, {
     headers: { 'Cache-Control': 'no-store' },
   })

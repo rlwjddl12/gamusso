@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react'
 import styles from './page.module.css'
 const CREW = [
-  {name:'황원태',role:null,uid:'hwt1014',c:'#4a90d9'},
+  {name:'가습기',role:'소장님',uid:'hwt1014',c:'#4a90d9'},
   {name:'잼율이',role:null,uid:'jamyul2',c:'#e89fc0'},
   {name:'야뿌',role:null,uid:'ekrekrnfl9',c:'#7ec8e3'},
   {name:'하티하티',role:null,uid:'gkxl1004',c:'#f4a460'},
@@ -44,44 +44,19 @@ function MemberCard({ m, isLive }) {
 }
 
 function LiveCard({ m, thumb, title }) {
-  const [playing, setPlaying] = useState(false)
-  const [muted, setMuted] = useState(true)
-
   return (
-    <div className={styles.liveCard}>
-      <div className={styles.liveThumbWrap} onClick={() => !playing && setPlaying(true)}>
-        {playing ? (
-          <>
-            <iframe
-              src={`https://play.sooplive.com/${m.uid}/embed?mute=${muted}`}
-              className={styles.liveIframe}
-              allow="autoplay; encrypted-media"
-              allowFullScreen
-            />
-            <div className={styles.liveControls}>
-              <button
-                className={styles.ctrlBtn}
-                onClick={(e) => { e.stopPropagation(); setMuted(!muted) }}
-              >
-                {muted ? '🔇' : '🔊'}
-              </button>
-              <button
-                className={styles.ctrlBtn}
-                onClick={(e) => { e.stopPropagation(); setPlaying(false) }}
-              >
-                ✕
-              </button>
-            </div>
-          </>
-        ) : (
-          <>
-            {thumb
-              ? <img src={thumb} alt={m.name} className={styles.liveThumb} />
-              : <div className={styles.liveThumbFallback}>📡</div>
-            }
-            <div className={styles.playOverlay}>▶</div>
-          </>
-        )}
+    <a
+      href={stationUrl(m.uid)}
+      target="_blank"
+      rel="noopener"
+      className={styles.liveCard}
+    >
+      <div className={styles.liveThumbWrap}>
+        {thumb
+          ? <img src={thumb} alt={m.name} className={styles.liveThumb} />
+          : <div className={styles.liveThumbFallback}>📡</div>
+        }
+        <div className={styles.playOverlay}>▶</div>
         <div className={styles.liveBadge}>● LIVE</div>
       </div>
       <div className={styles.liveInfo}>
@@ -90,6 +65,57 @@ function LiveCard({ m, thumb, title }) {
           <div className={styles.liveTitle}>{title || ''}</div>
         </div>
       </div>
+    </a>
+  )
+}
+
+function useCountdown(deadline) {
+  const [left, setLeft] = useState(null)
+  useEffect(() => {
+    if (!deadline) return
+    const target = new Date(deadline).getTime()
+    const tick = () => {
+      const diff = target - Date.now()
+      if (diff <= 0) { setLeft({ d:0, h:0, m:0, s:0, done:true }); return }
+      const d = Math.floor(diff / 86400000)
+      const h = Math.floor((diff % 86400000) / 3600000)
+      const m = Math.floor((diff % 3600000) / 60000)
+      const s = Math.floor((diff % 60000) / 1000)
+      setLeft({ d, h, m, s, done:false })
+    }
+    tick()
+    const t = setInterval(tick, 1000)
+    return () => clearInterval(t)
+  }, [deadline])
+  return left
+}
+
+function PiggyBankCard({ entry }) {
+  const member = CREW.find(m => m.uid === entry.uid)
+  const left = useCountdown(entry.deadline)
+  const pct = entry.goal ? Math.min(100, Math.floor((entry.amount / entry.goal) * 100)) : null
+
+  return (
+    <div className={styles.piggyCard} style={{'--card-color': member?.c || '#4a90d9'}}>
+      <div className={styles.piggyHeader}>
+        <span className={styles.piggyName}>{member?.name || entry.uid}</span>
+        <span className={styles.piggyStatus}>{left?.done ? '종료' : '진행'}</span>
+      </div>
+      <div className={styles.piggyTitle}>{entry.title || '삼국지 저금통'}</div>
+      <div className={styles.piggyAmount}>
+        상금: {entry.amount?.toLocaleString()}개
+        {entry.goal ? ` / ${entry.goal.toLocaleString()}개` : ''}
+      </div>
+      {pct !== null && (
+        <div className={styles.piggyBarTrack}>
+          <div className={styles.piggyBarFill} style={{ width: `${pct}%` }} />
+        </div>
+      )}
+      {left && !left.done && (
+        <div className={styles.piggyTimer}>
+          {left.d}일 {left.h}시간 {left.m}분 {left.s}초
+        </div>
+      )}
     </div>
   )
 }
@@ -97,6 +123,7 @@ function LiveCard({ m, thumb, title }) {
 export default function Home(){
   const [liveData, setLiveData] = useState({})
   const [news, setNews] = useState([])
+  const [piggyBanks, setPiggyBanks] = useState([])
 
   useEffect(() => {
     const check = async () => {
@@ -125,6 +152,18 @@ export default function Home(){
       .catch(() => {})
   }, [])
 
+  useEffect(() => {
+    const loadPiggy = () => {
+      fetch(`/piggybank.json?t=${Date.now()}`)
+        .then(r => r.json())
+        .then(setPiggyBanks)
+        .catch(() => {})
+    }
+    loadPiggy()
+    const t = setInterval(loadPiggy, 30 * 1000)
+    return () => clearInterval(t)
+  }, [])
+
   const liveMembers = CREW.filter(m => liveData[m.uid]?.live)
   const offMembers = CREW.filter(m => !liveData[m.uid]?.live)
 
@@ -143,6 +182,17 @@ export default function Home(){
           <div className={styles.liveGrid}>
             {liveMembers.map(m => (
               <LiveCard key={m.uid} m={m} thumb={liveData[m.uid]?.thumb} title={liveData[m.uid]?.title} />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {piggyBanks.length > 0 && (
+        <div className={styles.container}>
+          <div className={styles.secLabel}>🐷 삼국지 저금통</div>
+          <div className={styles.piggyGrid}>
+            {piggyBanks.map((entry, i) => (
+              <PiggyBankCard key={entry.uid + i} entry={entry} />
             ))}
           </div>
         </div>

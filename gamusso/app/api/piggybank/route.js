@@ -7,7 +7,7 @@ const CREW_UIDS = [
   'odoeun', 'wjdekgus112', 'fbcogk', '33h2101', '59590423',
 ]
 
-async function fetchChallengeFunding(uid) {
+async function fetchChallengeFunding(uid, debug) {
   const body = new URLSearchParams()
   body.append('szWork', 'getChallengeFunding')
   body.append('szBjId', uid)
@@ -25,8 +25,15 @@ async function fetchChallengeFunding(uid) {
       body,
       cache: 'no-store',
     })
-    const json = await res.json()
-    if (json.result !== 1 || !Array.isArray(json.data)) return []
+    const rawText = await res.text()
+    let json
+    try { json = JSON.parse(rawText) } catch { json = null }
+
+    if (debug) {
+      return { uid, httpStatus: res.status, rawText, parsed: json }
+    }
+
+    if (!json || json.result !== 1 || !Array.isArray(json.data)) return []
 
     return json.data
       .filter(m => m.status === 'PROGRESS' && (m.title || '').includes('삼국지'))
@@ -35,13 +42,23 @@ async function fetchChallengeFunding(uid) {
         title: m.title,
         amount: Number(m.balloon_cnt) || 0,
       }))
-  } catch {
+  } catch (err) {
+    if (debug) return { uid, error: String(err) }
     return []
   }
 }
 
-export async function GET() {
-  const results = await Promise.all(CREW_UIDS.map(fetchChallengeFunding))
+export async function GET(request) {
+  const { searchParams } = new URL(request.url)
+  const debug = searchParams.has('debug')
+
+  if (debug) {
+    const uid = searchParams.get('uid') || 'hwt1014'
+    const result = await fetchChallengeFunding(uid, true)
+    return NextResponse.json(result, { headers: { 'Cache-Control': 'no-store' } })
+  }
+
+  const results = await Promise.all(CREW_UIDS.map(uid => fetchChallengeFunding(uid, false)))
   const entries = results.flat()
   return NextResponse.json(entries, {
     headers: { 'Cache-Control': 'no-store' },

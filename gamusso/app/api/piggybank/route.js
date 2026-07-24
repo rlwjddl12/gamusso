@@ -14,13 +14,14 @@ async function fetchChallengeFunding(uid, debug) {
   body.append('szStatus[]', 'PROGRESS')
 
   try {
-    const res = await fetch('https://live.sooplive.com/api/mission_funding_api.php', {
+    const res = await fetch('https://live.sooplive.com/api/challenge_funding_api.php', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
         'Origin': 'https://play.sooplive.com',
         'Referer': `https://play.sooplive.com/${uid}`,
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36',
+        'Cookie': process.env.SOOP_SESSION_COOKIE || '',
       },
       body,
       cache: 'no-store',

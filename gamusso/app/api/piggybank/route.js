@@ -11,7 +11,7 @@ async function fetchChallengeFunding(uid, debug) {
   const body = new URLSearchParams()
   body.append('szWork', 'getChallengeFunding')
   body.append('szBjId', uid)
-  body.append('szStatus[]', 'PROGRESS')
+  ;['REQUEST', 'PROGRESS', 'SUCCESS', 'FAIL', 'CANCEL'].forEach(s => body.append('szStatus[]', s))
 
   try {
     const res = await fetch('https://live.sooplive.com/api/challenge_funding_api.php', {

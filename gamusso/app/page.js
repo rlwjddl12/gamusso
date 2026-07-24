@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react'
 import styles from './page.module.css'
 const CREW = [
-  {name:'황원대',role:null,uid:'hwt1014',c:'#4a90d9'},
+  {name:'황원태',role:null,uid:'hwt1014',c:'#4a90d9'},
   {name:'잼율이',role:null,uid:'jamyul2',c:'#e89fc0'},
   {name:'야뿌',role:null,uid:'ekrekrnfl9',c:'#7ec8e3'},
   {name:'하티하티',role:null,uid:'gkxl1004',c:'#f4a460'},

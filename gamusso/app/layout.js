@@ -1,8 +1,8 @@
 import './globals.css'
 
 export const metadata = {
-  title: '가무소 팬페이지',
-  description: '가습기 사무소 아프리카TV 크루 팬페이지',
+  title: '원더독 팬페이지',
+  description: '원더독 숲 크루 팬페이지',
 }
 
 export default function RootLayout({ children }) {

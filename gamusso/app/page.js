@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react'
 import styles from './page.module.css'
 const CREW = [
-  {name:'가습기',role:'소장님',uid:'hwt1014',c:'#4a90d9'},
+  {name:'황원태',role:null,uid:'hwt1014',c:'#4a90d9'},
   {name:'잼율이',role:null,uid:'jamyul2',c:'#e89fc0'},
   {name:'야뿌',role:null,uid:'ekrekrnfl9',c:'#7ec8e3'},
   {name:'하티하티',role:null,uid:'gkxl1004',c:'#f4a460'},
@@ -93,15 +93,21 @@ function PiggyBankRow({ entry }) {
   return (
     <div className={styles.piggyRow}>
       <div className={styles.piggyRowTop}>
-        <span className={styles.piggyRowName} style={{ color: member?.c || '#4a90d9' }}>
-          {member?.name || entry.uid}
-        </span>
-        <span className={styles.piggyRowDash}>-</span>
-        <span className={styles.piggyRowAmount}>
-          삼국지 {entry.amount?.toLocaleString()}개
-          {goal ? ` / 목표 ${goal.toLocaleString()}개` : ''}
-        </span>
-        {achieved && <span className={styles.piggyGoalBadge}>🎉 목표 달성!</span>}
+        <div className={styles.piggyRowNameWrap}>
+          <span className={styles.piggyColorDot} style={{ background: member?.c || '#4a90d9' }} />
+          <span className={styles.piggyRowName} style={{ color: member?.c || '#4a90d9' }}>
+            {member?.name || entry.uid}
+          </span>
+          {achieved && <span className={styles.piggyGoalBadge}>🎉 목표 달성</span>}
+        </div>
+        <div className={styles.piggyRowNumbers}>
+          <span className={styles.piggyAmountMain}>{entry.amount?.toLocaleString()}개</span>
+          {goal && (
+            <span className={styles.piggyGoalText}>
+              / {goal.toLocaleString()}개 · {pct}%
+            </span>
+          )}
+        </div>
       </div>
       {goal && (
         <div className={styles.piggyBarTrack}>

@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react'
 import styles from './page.module.css'
 const CREW = [
-  {name:'황원태',role:null,uid:'hwt1014',c:'#4a90d9'},
+  {name:'가습기',role:'소장님',uid:'hwt1014',c:'#4a90d9'},
   {name:'잼율이',role:null,uid:'jamyul2',c:'#e89fc0'},
   {name:'야뿌',role:null,uid:'ekrekrnfl9',c:'#7ec8e3'},
   {name:'하티하티',role:null,uid:'gkxl1004',c:'#f4a460'},
@@ -21,6 +21,20 @@ const CREW = [
 function profileImg(uid){return `https://stimg.sooplive.com/LOGO/${uid.substring(0,2)}/${uid}/${uid}.jpg`}
 function stationUrl(uid){return `https://www.sooplive.com/station/${uid}`}
 function liveUrl(uid){return `https://play.sooplive.com/${uid}`}
+
+// 멤버별 삼국지 저금통 목표 개수 (uid 기준)
+const PIGGY_GOALS = {
+  'hwt1014': 400000,    // 가습기(황원태)
+  '33h2101': 150000,    // 감초
+  'fbcogk': 200000,     // 채하
+  'tndk321': 200000,    // 단수아
+  'yeonchimin': 50000,  // 연치민
+  'ekrekrnfl9': 80000,  // 야뿌
+  'dinggoolx3': 90000,  // 딩굴 (야뿌보다 높게)
+  '200501': 100000,     // 연보라
+  '59590423': 100000,   // 아린
+  'ddr9463': 100000,    // 희꾸미
+}
 
 function MemberCard({ m, isLive }) {
   return (
@@ -72,15 +86,31 @@ function LiveCard({ m, thumb, title }) {
 
 function PiggyBankRow({ entry }) {
   const member = CREW.find(m => m.uid === entry.uid)
+  const goal = PIGGY_GOALS[entry.uid]
+  const achieved = goal ? entry.amount >= goal : false
+  const pct = goal ? Math.min(100, Math.floor((entry.amount / goal) * 100)) : null
+
   return (
     <div className={styles.piggyRow}>
-      <span className={styles.piggyRowName} style={{ color: member?.c || '#4a90d9' }}>
-        {member?.name || entry.uid}
-      </span>
-      <span className={styles.piggyRowDash}>-</span>
-      <span className={styles.piggyRowAmount}>
-        삼국지 {entry.amount?.toLocaleString()}개
-      </span>
+      <div className={styles.piggyRowTop}>
+        <span className={styles.piggyRowName} style={{ color: member?.c || '#4a90d9' }}>
+          {member?.name || entry.uid}
+        </span>
+        <span className={styles.piggyRowDash}>-</span>
+        <span className={styles.piggyRowAmount}>
+          삼국지 {entry.amount?.toLocaleString()}개
+          {goal ? ` / 목표 ${goal.toLocaleString()}개` : ''}
+        </span>
+        {achieved && <span className={styles.piggyGoalBadge}>🎉 목표 달성!</span>}
+      </div>
+      {goal && (
+        <div className={styles.piggyBarTrack}>
+          <div
+            className={styles.piggyBarFill}
+            style={{ width: `${pct}%`, background: achieved ? '#ffd700' : (member?.c || '#4a90d9') }}
+          />
+        </div>
+      )}
     </div>
   )
 }
@@ -204,4 +234,4 @@ export default function Home(){
       <footer className={styles.footer}>원더독 팬페이지 · 팬메이드 비공식 페이지</footer>
     </main>
   )
-}         
+}

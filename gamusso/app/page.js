@@ -128,18 +128,14 @@ export default function Home(){
 
   useEffect(() => {
     const check = async () => {
-      const results = await Promise.all(
-        CREW.map(async m => {
-          try {
-            const res = await fetch(`/api/live?uid=${m.uid}`)
-            const data = await res.json()
-            return [m.uid, data]
-          } catch {
-            return [m.uid, { live: false }]
-          }
-        })
-      )
-      setLiveData(Object.fromEntries(results))
+      try {
+        const uids = CREW.map(m => m.uid).join(',')
+        const res = await fetch(`/api/live?uids=${uids}`)
+        const data = await res.json()
+        setLiveData(data)
+      } catch {
+        setLiveData({})
+      }
     }
     check()
     const t = setInterval(check, 3 * 60 * 1000)

@@ -238,6 +238,14 @@ export default function Home() {
         </div>
       )}
 
+      {/* 가이드 */}
+      <div className={styles.container}>
+        <div className={styles.secLabel}>📖 GUIDE</div>
+        <a href="/guide.html" className={styles.gameBtn}>
+          📖 삼국지 시스템 요약
+        </a>
+      </div>
+
       {/* 소식 */}
       {news.length > 0 && (
         <div className={styles.container}>

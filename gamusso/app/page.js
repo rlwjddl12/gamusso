@@ -226,12 +226,12 @@ export default function Home(){
         </div>
       </div>
 
-      <div className={styles.container}>
-        <div className={styles.secLabel}>📖 GUIDE</div>
-        <a href="/guide.html" className={styles.gameBtn}>
-          📖 오나라 작전 지침서 · 전쟁·영·사냥터 총정리
-        </a>
-      </div>
+<div className={styles.container}>
+  <div className={styles.secLabel}>📖 GUIDE</div>
+  <a href="/guide.html" className={styles.gameBtn}>
+    📖 삼국지 시스템 요약
+  </a>
+</div>
 
       <footer className={styles.footer}>원더독 팬페이지 · 팬메이드 비공식 페이지</footer>
     </main>

@@ -227,9 +227,9 @@ export default function Home(){
       </div>
 
       <div className={styles.container}>
-        <div className={styles.secLabel}>⚔ GAME</div>
-        <a href="/game.html" className={styles.gameBtn}>
-          ⚔ 삼국지 운영 연습 게임 · 천하쟁탈전
+        <div className={styles.secLabel}>📖 GUIDE</div>
+        <a href="/guide.html" className={styles.gameBtn}>
+          📖 오나라 작전 지침서 · 전쟁·영·사냥터 총정리
         </a>
       </div>
 

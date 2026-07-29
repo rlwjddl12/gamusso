@@ -116,24 +116,6 @@ function PiggyBankRow({ entry }) {
           <span className={styles.piggyRowName} style={{ color: member?.c || '#4a90d9' }}>
             {member?.name || entry.uid}
           </span>
-          {entry.uid === 'hwt1014' && (() => {
-            const end = new Date('2027-03-04T16:00:00+09:00')
-            const now = new Date()
-            const diff = Math.ceil((end - now) / (1000 * 60 * 60 * 24))
-            const done = diff <= 0
-            return (
-              <span style={{
-                display:'inline-flex', alignItems:'center', gap:'4px',
-                background: done ? 'rgba(34,197,94,0.12)' : 'rgba(99,102,241,0.12)',
-                border: `1px solid ${done ? 'rgba(34,197,94,0.3)' : 'rgba(99,102,241,0.3)'}`,
-                borderRadius:'20px', padding:'2px 10px',
-                fontSize:'11px', fontWeight:600,
-                color: done ? '#4ade80' : '#818cf8', whiteSpace:'nowrap',
-              }}>
-                {done ? '🎉 방종 완료!' : `🎙 노방종 D-${diff}  · 2027.03.04`}
-              </span>
-            )
-          })()}
           {achieved && <span className={styles.piggyGoalBadge}>🎉 목표 달성</span>}
         </div>
         <div className={styles.piggyRowNumbers}>

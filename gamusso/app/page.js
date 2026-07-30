@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react'
 import styles from './page.module.css'
 const CREW = [
-  {name:'황원태',role:null,uid:'hwt1014',c:'#4a90d9'},
+  {name:'황원태',role:'소장님',uid:'hwt1014',c:'#4a90d9'},
   {name:'잼율이',role:null,uid:'jamyul2',c:'#e89fc0'},
   {name:'야뿌',role:null,uid:'ekrekrnfl9',c:'#7ec8e3'},
   {name:'하티하티',role:null,uid:'gkxl1004',c:'#f4a460'},
@@ -92,12 +92,18 @@ function ChallengeRanking({ piggyBanks, baseline, onEditBaseline }) {
     })
     .sort((a, b) => b.gained - a.gained)
 
-  const medal = (rank) => {
-    if (rank === 1) return { bg: 'rgba(255,215,0,0.14)', border: 'rgba(255,215,0,0.4)', text: '#ffd700' }
-    if (rank === 2) return { bg: 'rgba(210,210,220,0.14)', border: 'rgba(210,210,220,0.4)', text: '#e2e2e8' }
-    if (rank === 3) return { bg: 'rgba(205,127,50,0.14)', border: 'rgba(205,127,50,0.4)', text: '#e0a06a' }
-    return { bg: 'rgba(255,255,255,0.03)', border: 'rgba(255,255,255,0.08)', text: '#9aa0ab' }
-  }
+  const TIERS = [
+    { icon: '👑', label: '여왕', bg: '#e8d000', text: '#1a1500' },
+    { icon: '❤️', label: '공주', bg: '#c0356f', text: '#fff' },
+    { icon: '🏅', label: '귀족', bg: '#6b6b78', text: '#fff' },
+    { icon: '⚜️', label: '기사단장', bg: '#3a4d6b', text: '#fff' },
+    { icon: '⚔️', label: '기사', bg: '#2f3a45', text: '#fff' },
+    { icon: '🌾', label: '평민', bg: '#2a2d33', text: '#c9cdd6' },
+    { icon: '🧺', label: '상인', bg: '#24262b', text: '#c9cdd6' },
+    { icon: '🧹', label: '하인', bg: '#202226', text: '#a7abb5' },
+    { icon: '⛓️', label: '노예', bg: '#1a1b1e', text: '#8b8f99' },
+  ]
+  const tierFor = (rank) => TIERS[Math.min(rank - 1, TIERS.length - 1)]
 
   return (
     <div className={styles.challengeBox} style={{ padding: '16px', borderRadius: '14px' }}>
@@ -107,25 +113,27 @@ function ChallengeRanking({ piggyBanks, baseline, onEditBaseline }) {
       <div className={styles.challengeHint} style={{ fontSize: '12.5px', opacity: 0.65, marginBottom: '14px' }}>
         시작점을 직접 입력하면, 그 값 기준으로 획득량을 다시 계산해요.
       </div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
         {ranked.map((e, i) => {
           const rank = i + 1
           const member = CREW.find(m => m.uid === e.uid)
-          const m = medal(rank)
+          const tier = tierFor(rank)
           return (
             <div
               key={e.uid}
               style={{
-                padding: '10px 12px',
-                borderRadius: '10px',
-                background: m.bg,
-                border: `1px solid ${m.border}`,
+                padding: '10px 14px',
+                borderRadius: '8px',
+                background: tier.bg,
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                <span style={{ fontWeight: 800, fontSize: '13px', color: m.text }}>{rank}위</span>
+                <span style={{ fontSize: '15px' }}>{tier.icon}</span>
+                <span style={{ fontWeight: 800, fontSize: '12px', color: tier.text, opacity: 0.85 }}>
+                  {tier.label}
+                </span>
                 <span style={{
-                  fontWeight: 700, fontSize: '14.5px',
+                  fontWeight: 800, fontSize: '14.5px',
                   color: member?.c || '#4a90d9',
                   overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                 }}>
@@ -133,7 +141,7 @@ function ChallengeRanking({ piggyBanks, baseline, onEditBaseline }) {
                 </span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', flexWrap: 'wrap' }}>
-                <span style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', opacity: 0.75 }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: tier.text, opacity: 0.75 }}>
                   시작
                   <input
                     type="number"
@@ -147,7 +155,7 @@ function ChallengeRanking({ piggyBanks, baseline, onEditBaseline }) {
                       padding: '5px 8px',
                       borderRadius: '6px',
                       border: '1px solid rgba(255,255,255,0.18)',
-                      background: 'rgba(255,255,255,0.06)',
+                      background: 'rgba(255,255,255,0.1)',
                       color: '#fff',
                       fontSize: '12.5px',
                     }}
@@ -155,7 +163,7 @@ function ChallengeRanking({ piggyBanks, baseline, onEditBaseline }) {
                 </span>
                 <span style={{
                   fontWeight: 800, fontSize: '15px',
-                  color: '#ff9f43',
+                  color: rank === 1 ? '#1a1500' : '#ff9f43',
                   whiteSpace: 'nowrap',
                 }}>
                   +{e.gained.toLocaleString()}개
@@ -253,7 +261,7 @@ export default function Home(){
         .catch(() => {})
     }
     loadPiggy()
-    const t = setInterval(loadPiggy, 60 * 1000)
+    const t = setInterval(loadPiggy, 30 * 1000)
     return () => clearInterval(t)
   }, [])
 

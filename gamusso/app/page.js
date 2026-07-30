@@ -90,7 +90,7 @@ function ChallengeRanking({ piggyBanks, baseline, onEditBaseline }) {
       const start = baseline[e.uid] ?? e.amount
       return { ...e, start, gained: Math.max(0, (e.amount || 0) - start) }
     })
-    .sort((a, b) => (b.amount || 0) - (a.amount || 0))
+    .sort((a, b) => b.gained - a.gained)
 
   const TIERS = [
     { icon: '👑', label: '여왕', bg: '#a8862a', text: '#fff7db' },

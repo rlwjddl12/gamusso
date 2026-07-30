@@ -111,7 +111,7 @@ function ChallengeRanking({ piggyBanks, baseline, onEditBaseline }) {
         ⚔ 도전미션 획득량 순위 (실시간)
       </div>
       <div className={styles.challengeHint} style={{ fontSize: '12.5px', opacity: 0.65, marginBottom: '14px' }}>
-        시작점을 직접 입력하면, 그 값 기준으로 획득량을 다시 계산해요.
+        받은 값을 직접 입력하면, 그 값 기준으로 순위를 다시 계산해요.
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
         {ranked.map((e, i) => {
@@ -142,16 +142,16 @@ function ChallengeRanking({ piggyBanks, baseline, onEditBaseline }) {
               </div>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', flexWrap: 'wrap' }}>
                 <span style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: tier.text, opacity: 0.75 }}>
-                  시작
+                  획득량
                   <input
                     type="number"
-                    defaultValue={e.start}
+                    defaultValue={e.gained}
                     onBlur={(ev) => {
                       const val = Number(ev.target.value)
-                      if (!Number.isNaN(val)) onEditBaseline(e.uid, val)
+                      if (!Number.isNaN(val)) onEditBaseline(e.uid, (e.amount || 0) - val)
                     }}
                     style={{
-                      width: '84px',
+                      width: '90px',
                       padding: '5px 8px',
                       borderRadius: '6px',
                       border: '1px solid rgba(255,255,255,0.18)',

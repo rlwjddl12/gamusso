@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react'
 import styles from './page.module.css'
 const CREW = [
-  {name:'황원태',role:'소장님',uid:'hwt1014',c:'#4a90d9'},
+  {name:'황원태',role:null,uid:'hwt1014',c:'#4a90d9'},
   {name:'잼율이',role:null,uid:'jamyul2',c:'#e89fc0'},
   {name:'야뿌',role:null,uid:'ekrekrnfl9',c:'#7ec8e3'},
   {name:'하티하티',role:null,uid:'gkxl1004',c:'#f4a460'},
@@ -289,11 +289,32 @@ export default function Home(){
 
           <div className={styles.challengeControls}>
             {challengeBaseline ? (
-              <button className={styles.challengeStopBtn} onClick={stopChallenge}>
+              <button
+                className={styles.challengeStopBtn}
+                onClick={stopChallenge}
+                style={{
+                  fontSize: '16px',
+                  fontWeight: 800,
+                  padding: '14px 28px',
+                  borderRadius: '12px',
+                  width: '100%',
+                }}
+              >
                 도전 종료
               </button>
             ) : (
-              <button className={styles.challengeStartBtn} onClick={startChallenge}>
+              <button
+                className={styles.challengeStartBtn}
+                onClick={startChallenge}
+                style={{
+                  fontSize: '17px',
+                  fontWeight: 800,
+                  padding: '16px 28px',
+                  borderRadius: '12px',
+                  width: '100%',
+                  boxShadow: '0 0 0 1px rgba(255,159,67,0.4), 0 4px 14px rgba(255,159,67,0.25)',
+                }}
+              >
                 ⚔ 지금부터 도전 시작
               </button>
             )}
@@ -304,9 +325,11 @@ export default function Home(){
           )}
 
           <div className={styles.piggyList}>
-            {piggyBanks.map((entry, i) => (
-              <PiggyBankRow key={entry.uid + i} entry={entry} />
-            ))}
+            {[...piggyBanks]
+              .sort((a, b) => (b.amount || 0) - (a.amount || 0))
+              .map((entry, i) => (
+                <PiggyBankRow key={entry.uid + i} entry={entry} />
+              ))}
           </div>
         </div>
       )}

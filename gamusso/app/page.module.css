@@ -393,3 +393,24 @@
   transition: width 0.5s ease;
   border-radius: 4px;
 }
+.challengeHint {
+  font-size: 0.8rem;
+  color: #888;
+  margin-bottom: 10px;
+}
+.challengeStartInputWrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  color: #888;
+}
+.challengeStartInput {
+  width: 90px;
+  padding: 4px 6px;
+  border-radius: 6px;
+  border: 1px solid #444;
+  background: #0f0f13;
+  color: #fff;
+  font-size: 0.85rem;
+}

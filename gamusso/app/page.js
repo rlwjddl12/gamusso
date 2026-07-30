@@ -90,10 +90,10 @@ function ChallengeRanking({ piggyBanks, baseline, onEditBaseline }) {
       const start = baseline[e.uid] ?? e.amount
       return { ...e, start, gained: Math.max(0, (e.amount || 0) - start) }
     })
-    .sort((a, b) => b.gained - a.gained)
+    .sort((a, b) => (b.amount || 0) - (a.amount || 0))
 
   const TIERS = [
-    { icon: '👑', label: '여왕', bg: '#e8d000', text: '#1a1500' },
+    { icon: '👑', label: '여왕', bg: '#a8862a', text: '#fff7db' },
     { icon: '❤️', label: '공주', bg: '#c0356f', text: '#fff' },
     { icon: '🏅', label: '귀족', bg: '#6b6b78', text: '#fff' },
     { icon: '⚜️', label: '기사단장', bg: '#3a4d6b', text: '#fff' },
@@ -163,7 +163,7 @@ function ChallengeRanking({ piggyBanks, baseline, onEditBaseline }) {
                 </span>
                 <span style={{
                   fontWeight: 800, fontSize: '15px',
-                  color: rank === 1 ? '#1a1500' : '#ff9f43',
+                  color: '#ffb84d',
                   whiteSpace: 'nowrap',
                 }}>
                   +{e.gained.toLocaleString()}개

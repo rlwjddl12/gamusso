@@ -92,36 +92,75 @@ function ChallengeRanking({ piggyBanks, baseline, onEditBaseline }) {
     })
     .sort((a, b) => b.gained - a.gained)
 
+  const medal = (rank) => {
+    if (rank === 1) return { bg: 'rgba(255,215,0,0.14)', border: 'rgba(255,215,0,0.4)', text: '#ffd700' }
+    if (rank === 2) return { bg: 'rgba(210,210,220,0.14)', border: 'rgba(210,210,220,0.4)', text: '#e2e2e8' }
+    if (rank === 3) return { bg: 'rgba(205,127,50,0.14)', border: 'rgba(205,127,50,0.4)', text: '#e0a06a' }
+    return { bg: 'rgba(255,255,255,0.03)', border: 'rgba(255,255,255,0.08)', text: '#9aa0ab' }
+  }
+
   return (
-    <div className={styles.challengeBox}>
-      <div className={styles.challengeTitle}>⚔ 도전미션 획득량 순위 (실시간)</div>
-      <div className={styles.challengeHint}>
+    <div className={styles.challengeBox} style={{ padding: '16px', borderRadius: '14px' }}>
+      <div className={styles.challengeTitle} style={{ fontSize: '16px', marginBottom: '4px' }}>
+        ⚔ 도전미션 획득량 순위 (실시간)
+      </div>
+      <div className={styles.challengeHint} style={{ fontSize: '12.5px', opacity: 0.65, marginBottom: '14px' }}>
         시작점을 직접 입력하면, 그 값 기준으로 획득량을 다시 계산해요.
       </div>
-      <div className={styles.piggyList}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
         {ranked.map((e, i) => {
+          const rank = i + 1
           const member = CREW.find(m => m.uid === e.uid)
+          const m = medal(rank)
           return (
-            <div key={e.uid} className={styles.challengeRow}>
-              <span className={styles.challengeRank}>{i + 1}위</span>
-              <span className={styles.piggyRowName} style={{ color: member?.c || '#4a90d9' }}>
-                {member?.name || e.uid}
-              </span>
-              <span className={styles.challengeStartInputWrap}>
-                시작
-                <input
-                  type="number"
-                  className={styles.challengeStartInput}
-                  defaultValue={e.start}
-                  onBlur={(ev) => {
-                    const val = Number(ev.target.value)
-                    if (!Number.isNaN(val)) onEditBaseline(e.uid, val)
-                  }}
-                />
-              </span>
-              <span className={styles.challengeGain}>
-                +{e.gained.toLocaleString()}개
-              </span>
+            <div
+              key={e.uid}
+              style={{
+                padding: '10px 12px',
+                borderRadius: '10px',
+                background: m.bg,
+                border: `1px solid ${m.border}`,
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                <span style={{ fontWeight: 800, fontSize: '13px', color: m.text }}>{rank}위</span>
+                <span style={{
+                  fontWeight: 700, fontSize: '14.5px',
+                  color: member?.c || '#4a90d9',
+                  overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                }}>
+                  {member?.name || e.uid}
+                </span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', flexWrap: 'wrap' }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', opacity: 0.75 }}>
+                  시작
+                  <input
+                    type="number"
+                    defaultValue={e.start}
+                    onBlur={(ev) => {
+                      const val = Number(ev.target.value)
+                      if (!Number.isNaN(val)) onEditBaseline(e.uid, val)
+                    }}
+                    style={{
+                      width: '84px',
+                      padding: '5px 8px',
+                      borderRadius: '6px',
+                      border: '1px solid rgba(255,255,255,0.18)',
+                      background: 'rgba(255,255,255,0.06)',
+                      color: '#fff',
+                      fontSize: '12.5px',
+                    }}
+                  />
+                </span>
+                <span style={{
+                  fontWeight: 800, fontSize: '15px',
+                  color: '#ff9f43',
+                  whiteSpace: 'nowrap',
+                }}>
+                  +{e.gained.toLocaleString()}개
+                </span>
+              </div>
             </div>
           )
         })}
@@ -272,6 +311,13 @@ export default function Home(){
         </div>
       )}
 
+      <div className={styles.container}>
+        <div className={styles.secLabel}>📖 GUIDE</div>
+        <a href="/guide.html" className={styles.gameBtn}>
+          📖 삼국지 시스템 요약
+        </a>
+      </div>
+
       {news.length > 0 && (
         <div className={styles.container}>
           <div className={styles.secLabel}>📰 원더독 소식</div>
@@ -300,14 +346,8 @@ export default function Home(){
         </div>
       </div>
 
-      <div className={styles.container}>
-        <div className={styles.secLabel}>⚔ GAME</div>
-        <a href="/game.html" className={styles.gameBtn}>
-          ⚔ 삼국지 운영 연습 게임 · 천하쟁탈전
-        </a>
-      </div>
-
       <footer className={styles.footer}>원더독 팬페이지 · 팬메이드 비공식 페이지</footer>
     </main>
   )
+}
 }

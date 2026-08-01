@@ -84,7 +84,35 @@ function LiveCard({ m, thumb, title }) {
   )
 }
 
-function ChallengeRanking({ piggyBanks, baseline, onEditBaseline }) {
+// ── 오늘 하루치 저금통 스냅샷 기록 (오늘 도전미션 획득량 계산용) ──
+function todayHistoryKey() {
+  const d = new Date()
+  return `wonderdog_piggy_hist_${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`
+}
+function loadPiggyHistory() {
+  if (typeof window === 'undefined') return []
+  try {
+    const raw = window.localStorage.getItem(todayHistoryKey())
+    return raw ? JSON.parse(raw) : []
+  } catch { return [] }
+}
+function savePiggySnapshot(piggyBanks) {
+  if (typeof window === 'undefined') return []
+  try {
+    const amounts = {}
+    piggyBanks.forEach(e => { amounts[e.uid] = e.amount || 0 })
+    const hist = loadPiggyHistory()
+    hist.push({ t: Date.now(), amounts })
+    const trimmed = hist.slice(-800) // 안전장치: 너무 커지지 않게
+    window.localStorage.setItem(todayHistoryKey(), JSON.stringify(trimmed))
+    return trimmed
+  } catch { return [] }
+}
+function todayBaseline(history) {
+  return history.length > 0 ? history[0].amounts : {}
+}
+
+function RankingBoard({ piggyBanks, baseline, title, hint }) {
   const ranked = piggyBanks
     .map(e => {
       const start = baseline[e.uid] ?? e.amount
@@ -108,10 +136,10 @@ function ChallengeRanking({ piggyBanks, baseline, onEditBaseline }) {
   return (
     <div className={styles.challengeBox} style={{ padding: '16px', borderRadius: '14px' }}>
       <div className={styles.challengeTitle} style={{ fontSize: '16px', marginBottom: '4px' }}>
-        ⚔ 도전미션 획득량 순위 (실시간)
+        {title}
       </div>
       <div className={styles.challengeHint} style={{ fontSize: '12.5px', opacity: 0.65, marginBottom: '14px' }}>
-        받은 값을 직접 입력하면, 그 값 기준으로 순위를 다시 계산해요.
+        {hint}
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
         {ranked.map((e, i) => {
@@ -125,11 +153,15 @@ function ChallengeRanking({ piggyBanks, baseline, onEditBaseline }) {
                 padding: '10px 14px',
                 borderRadius: '8px',
                 background: tier.bg,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: '10px',
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0 }}>
                 <span style={{ fontSize: '15px' }}>{tier.icon}</span>
-                <span style={{ fontWeight: 800, fontSize: '12px', color: tier.text, opacity: 0.85 }}>
+                <span style={{ fontWeight: 800, fontSize: '12px', color: tier.text, opacity: 0.85, whiteSpace: 'nowrap' }}>
                   {tier.label}
                 </span>
                 <span style={{
@@ -140,35 +172,13 @@ function ChallengeRanking({ piggyBanks, baseline, onEditBaseline }) {
                   {member?.name || e.uid}
                 </span>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', flexWrap: 'wrap' }}>
-                <span style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: tier.text, opacity: 0.75 }}>
-                  획득량
-                  <input
-                    type="number"
-                    defaultValue={e.gained}
-                    onBlur={(ev) => {
-                      const val = Number(ev.target.value)
-                      if (!Number.isNaN(val)) onEditBaseline(e.uid, (e.amount || 0) - val)
-                    }}
-                    style={{
-                      width: '90px',
-                      padding: '5px 8px',
-                      borderRadius: '6px',
-                      border: '1px solid rgba(255,255,255,0.18)',
-                      background: 'rgba(255,255,255,0.1)',
-                      color: '#fff',
-                      fontSize: '12.5px',
-                    }}
-                  />
-                </span>
-                <span style={{
-                  fontWeight: 800, fontSize: '15px',
-                  color: '#ffb84d',
-                  whiteSpace: 'nowrap',
-                }}>
-                  +{e.gained.toLocaleString()}개
-                </span>
-              </div>
+              <span style={{
+                fontWeight: 800, fontSize: '15px',
+                color: '#ffb84d',
+                whiteSpace: 'nowrap',
+              }}>
+                +{e.gained.toLocaleString()}개
+              </span>
             </div>
           )
         })}
@@ -218,17 +228,11 @@ export default function Home(){
   const [liveData, setLiveData] = useState({})
   const [news, setNews] = useState([])
   const [piggyBanks, setPiggyBanks] = useState([])
-  const [challengeBaseline, setChallengeBaseline] = useState(null) // null = 도전 시작 안 함
+  const [piggyHistory, setPiggyHistory] = useState([]) // 오늘 하루치 스냅샷 (오늘 획득량 계산용)
 
-  const startChallenge = () => {
-    const baseline = {}
-    piggyBanks.forEach(e => { baseline[e.uid] = e.amount || 0 })
-    setChallengeBaseline(baseline)
-  }
-  const stopChallenge = () => setChallengeBaseline(null)
-  const editBaseline = (uid, value) => {
-    setChallengeBaseline(prev => ({ ...(prev || {}), [uid]: value }))
-  }
+  useEffect(() => {
+    setPiggyHistory(loadPiggyHistory())
+  }, [])
 
   useEffect(() => {
     const check = async () => {
@@ -257,7 +261,10 @@ export default function Home(){
     const loadPiggy = () => {
       fetch(`/api/piggybank?t=${Date.now()}`)
         .then(r => r.json())
-        .then(setPiggyBanks)
+        .then(data => {
+          setPiggyBanks(data)
+          setPiggyHistory(savePiggySnapshot(data))
+        })
         .catch(() => {})
     }
     loadPiggy()
@@ -295,41 +302,13 @@ export default function Home(){
             종합 - 삼국지 {piggyBanks.reduce((sum, e) => sum + (e.amount || 0), 0).toLocaleString()}개
           </div>
 
-          <div className={styles.challengeControls}>
-            {challengeBaseline ? (
-              <button
-                className={styles.challengeStopBtn}
-                onClick={stopChallenge}
-                style={{
-                  fontSize: '16px',
-                  fontWeight: 800,
-                  padding: '14px 28px',
-                  borderRadius: '12px',
-                  width: '100%',
-                }}
-              >
-                도전 종료
-              </button>
-            ) : (
-              <button
-                className={styles.challengeStartBtn}
-                onClick={startChallenge}
-                style={{
-                  fontSize: '17px',
-                  fontWeight: 800,
-                  padding: '16px 28px',
-                  borderRadius: '12px',
-                  width: '100%',
-                  boxShadow: '0 0 0 1px rgba(255,159,67,0.4), 0 4px 14px rgba(255,159,67,0.25)',
-                }}
-              >
-                ⚔ 지금부터 도전 시작
-              </button>
-            )}
-          </div>
-
-          {challengeBaseline && (
-            <ChallengeRanking piggyBanks={piggyBanks} baseline={challengeBaseline} onEditBaseline={editBaseline} />
+          {piggyHistory.length > 0 && (
+            <RankingBoard
+              piggyBanks={piggyBanks}
+              baseline={todayBaseline(piggyHistory)}
+              title="🌞 오늘 도전미션 획득량"
+              hint="오늘 처음 기록된 시점 대비 실시간 획득량이에요."
+            />
           )}
 
           <div className={styles.piggyList}>
@@ -341,13 +320,6 @@ export default function Home(){
           </div>
         </div>
       )}
-
-      <div className={styles.container}>
-        <div className={styles.secLabel}>📖 GUIDE</div>
-        <a href="/guide.html" className={styles.gameBtn}>
-          📖 삼국지 정리
-        </a>
-      </div>
 
       {news.length > 0 && (
         <div className={styles.container}>
